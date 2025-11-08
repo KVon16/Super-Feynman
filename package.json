@@ -1,0 +1,30 @@
+{
+  "name": "super-feynman",
+  "version": "1.0.0",
+  "description": "A web application for college students to systematically review and master concepts using the Feynman Technique through AI-powered conversational sessions with speech-to-text dictation support.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KVon16/Super-Feynman.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/KVon16/Super-Feynman/issues"
+  },
+  "homepage": "https://github.com/KVon16/Super-Feynman#readme",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.68.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "multer": "^2.0.2",
+    "openai": "^6.8.1",
+    "sqlite3": "^5.1.7"
+  }
+}

@@ -1,0 +1,131 @@
+{
+  "version": "1.0",
+  "skills": {
+    "backend-dev": {
+      "type": "domain",
+      "enforcement": "suggest",
+      "priority": "high",
+      "promptTriggers": {
+        "keywords": [
+          "express",
+          "controller",
+          "route",
+          "service",
+          "sqlite",
+          "database",
+          "backend",
+          "api endpoint",
+          "multer",
+          "file upload",
+          "BaseController",
+          "middleware",
+          "error handler",
+          "courses",
+          "lectures",
+          "concepts",
+          "review sessions",
+          "feedback analysis",
+          "progress status",
+          "conversation history",
+          "transcription"
+        ],
+        "intentPatterns": [
+          "create.*route",
+          "create.*controller",
+          "create.*service",
+          "set.*up.*database",
+          "add.*endpoint",
+          "implement.*api",
+          "generate.*concept",
+          "review.*session",
+          "analyze.*feedback",
+          "update.*progress"
+        ]
+      }
+    },
+    "frontend-dev": {
+      "type": "domain",
+      "enforcement": "suggest",
+      "priority": "high",
+      "promptTriggers": {
+        "keywords": [
+          "react",
+          "component",
+          "tailwind",
+          "jsx",
+          "useState",
+          "useEffect",
+          "frontend",
+          "page",
+          "ui",
+          "css",
+          "styling",
+          "hook",
+          "router",
+          "feynman",
+          "learning",
+          "concept",
+          "review session",
+          "chat interface",
+          "audience selection",
+          "microphone",
+          "dictation",
+          "audio recording",
+          "progress tracking",
+          "feedback screen",
+          "course management",
+          "lecture"
+        ],
+        "intentPatterns": [
+          "create.*component",
+          "create.*page",
+          "style.*with.*tailwind",
+          "add.*useState",
+          "implement.*ui",
+          "review.*session",
+          "audio.*record",
+          "chat.*interface",
+          "audience.*level"
+        ]
+      }
+    },
+    "api-integration": {
+      "type": "domain",
+      "enforcement": "suggest",
+      "priority": "high",
+      "promptTriggers": {
+        "keywords": [
+          "anthropic",
+          "claude",
+          "whisper",
+          "openai",
+          "api key",
+          "concept generation",
+          "transcribe",
+          "speech to text",
+          "conversation",
+          "feedback",
+          "ai",
+          "llm",
+          "feynman technique",
+          "probing questions",
+          "understanding assessment",
+          "streaming",
+          "conversation history",
+          "system prompt"
+        ],
+        "intentPatterns": [
+          "integrate.*anthropic",
+          "integrate.*whisper",
+          "generate.*concepts",
+          "transcribe.*audio",
+          "call.*claude.*api",
+          "implement.*ai",
+          "stream.*message",
+          "analyze.*conversation",
+          "generate.*question"
+        ]
+      }
+    }
+  }
+}

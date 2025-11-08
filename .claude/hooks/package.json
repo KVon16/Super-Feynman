@@ -1,0 +1,25 @@
+{
+  "name": "hooks",
+  "version": "1.0.0",
+  "description": "Claude Code hooks that enable skill auto-activation, file tracking, and validation.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.68.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "multer": "^2.0.2",
+    "openai": "^6.8.1",
+    "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "tsx": "^4.20.6"
+  }
+}

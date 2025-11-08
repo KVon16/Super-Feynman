@@ -1,0 +1,32 @@
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "/Users/junjia_zheng/Desktop/Personal/CBC Hackthon/Super-Feynman"
+      ]
+    },
+    "github": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-github"
+      ],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "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"
+      }
+    },
+    "figma": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-figma"
+      ],
+      "env": {
+        "FIGMA_PERSONAL_ACCESS_TOKEN": "figd_5D8rlPuVhT8OMymVhx7YDotB4oc6yKmMDR5eqoRb"
+      }
+    }
+  }
+}

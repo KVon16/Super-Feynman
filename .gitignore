@@ -137,3 +137,22 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# SQLite databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Claude Code cache and session files
+.claude/tsc-cache/
+.claude/.file-tracker.json
+
+# Uploaded files and temporary content
+uploads/
+temp/
+tmp/
