@@ -4,7 +4,7 @@
  * Provides typed functions for all backend API endpoints with error handling
  */
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+const API_URL = import.meta.env.VITE_API_URL || '';
 
 // ============================================================================
 // Error Handling
@@ -157,7 +157,8 @@ async function fetchAPI<T>(
       );
     }
 
-    return data;
+    // Extract data from wrapped response format { success: true, data: <actual data> }
+    return data.data !== undefined ? data.data : data;
   } catch (error) {
     if (error instanceof APIError) {
       throw error;
