@@ -4,12 +4,14 @@ import { CourseView } from './components/CourseView';
 import { LectureView } from './components/LectureView';
 import { ReviewSession } from './components/ReviewSession';
 import { FeedbackScreen } from './components/FeedbackScreen';
+import * as api from './services/api';
 
 export type ProgressStatus = 'Not Started' | 'Reviewing' | 'Understood' | 'Mastered';
 
 export interface Concept {
   id: string;
   name: string;
+  description: string;
   status: ProgressStatus;
   lastReviewed?: Date;
 }
@@ -42,7 +44,7 @@ export interface FeedbackData {
   struggledWith: string[];
 }
 
-type Screen = 
+type Screen =
   | { type: 'home' }
   | { type: 'course'; courseId: string }
   | { type: 'lecture'; lectureId: string; courseId: string }
@@ -53,6 +55,8 @@ export default function App() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [lectures, setLectures] = useState<Lecture[]>([]);
   const [screen, setScreen] = useState<Screen>({ type: 'home' });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     // Add Anthropic font
@@ -63,75 +67,108 @@ export default function App() {
     document.body.style.fontFamily = 'Inter, system-ui, sans-serif';
   }, []);
 
-  // Initialize with empty state
+  // Load all courses and lectures on mount
   useEffect(() => {
-    // Could load from localStorage here
-    const savedCourses = localStorage.getItem('superFeynman-courses');
-    const savedLectures = localStorage.getItem('superFeynman-lectures');
-    
-    if (savedCourses) setCourses(JSON.parse(savedCourses));
-    if (savedLectures) setLectures(JSON.parse(savedLectures));
+    loadData();
   }, []);
 
-  // Save to localStorage whenever data changes
-  useEffect(() => {
-    localStorage.setItem('superFeynman-courses', JSON.stringify(courses));
-  }, [courses]);
+  const loadData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
 
-  useEffect(() => {
-    localStorage.setItem('superFeynman-lectures', JSON.stringify(lectures));
-  }, [lectures]);
+      // Fetch all courses
+      const fetchedCourses = await api.getCourses();
+      setCourses(fetchedCourses);
 
-  const addCourse = (name: string) => {
-    const newCourse: Course = {
-      id: Date.now().toString(),
-      name,
-    };
-    setCourses([...courses, newCourse]);
-    setScreen({ type: 'course', courseId: newCourse.id });
+      // Fetch lectures for each course
+      const allLectures: Lecture[] = [];
+      for (const course of fetchedCourses) {
+        const courseLectures = await api.getLectures(course.id);
+        allLectures.push(...courseLectures);
+      }
+      setLectures(allLectures);
+    } catch (err) {
+      console.error('Error loading data:', err);
+      setError(err instanceof api.APIError ? err.message : 'Failed to load data');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const deleteCourse = (courseId: string) => {
-    setCourses(courses.filter(c => c.id !== courseId));
-    setLectures(lectures.filter(l => l.courseId !== courseId));
-    setScreen({ type: 'home' });
+  const addCourse = async (name: string) => {
+    try {
+      const newCourse = await api.createCourse(name);
+      setCourses([...courses, newCourse]);
+      setScreen({ type: 'course', courseId: newCourse.id });
+    } catch (err) {
+      console.error('Error creating course:', err);
+      alert(err instanceof api.APIError ? err.message : 'Failed to create course');
+      throw err;
+    }
+  };
+
+  const deleteCourse = async (courseId: string) => {
+    try {
+      await api.deleteCourse(courseId);
+      setCourses(courses.filter(c => c.id !== courseId));
+      setLectures(lectures.filter(l => l.courseId !== courseId));
+      setScreen({ type: 'home' });
+    } catch (err) {
+      console.error('Error deleting course:', err);
+      alert(err instanceof api.APIError ? err.message : 'Failed to delete course');
+      throw err;
+    }
   };
 
   const addLecture = async (courseId: string, name: string, file: File) => {
-    const lectureId = Date.now().toString();
-    
-    // Simulate processing the file
-    const fileContent = await file.text();
-    
-    // Simulate API call to extract concepts
-    const concepts = await simulateConceptExtraction(fileContent);
-    
-    const newLecture: Lecture = {
-      id: lectureId,
-      name,
-      courseId,
-      concepts,
-    };
-    
-    setLectures([...lectures, newLecture]);
-    return lectureId;
+    try {
+      // Call API to create lecture with file upload
+      // Backend will automatically generate concepts using Anthropic API
+      const newLecture = await api.createLecture(courseId, name, file);
+
+      // Add lecture with concepts to state
+      setLectures([...lectures, newLecture]);
+
+      return newLecture.id;
+    } catch (err) {
+      console.error('Error creating lecture:', err);
+      alert(err instanceof api.APIError ? err.message : 'Failed to create lecture');
+      throw err;
+    }
   };
 
-  const deleteLecture = (lectureId: string, courseId: string) => {
-    setLectures(lectures.filter(l => l.id !== lectureId));
-    setScreen({ type: 'course', courseId });
+  const deleteLecture = async (lectureId: string, courseId: string) => {
+    try {
+      await api.deleteLecture(lectureId);
+      setLectures(lectures.filter(l => l.id !== lectureId));
+      setScreen({ type: 'course', courseId });
+    } catch (err) {
+      console.error('Error deleting lecture:', err);
+      alert(err instanceof api.APIError ? err.message : 'Failed to delete lecture');
+      throw err;
+    }
   };
 
-  const deleteConcept = (lectureId: string, conceptId: string) => {
-    setLectures(lectures.map(lecture => {
-      if (lecture.id === lectureId) {
-        return {
-          ...lecture,
-          concepts: lecture.concepts.filter(c => c.id !== conceptId),
-        };
-      }
-      return lecture;
-    }));
+  const deleteConcept = async (lectureId: string, conceptId: string) => {
+    try {
+      await api.deleteConcept(conceptId);
+
+      // Update state to remove concept
+      setLectures(lectures.map(lecture => {
+        if (lecture.id === lectureId) {
+          return {
+            ...lecture,
+            concepts: lecture.concepts.filter(c => c.id !== conceptId),
+          };
+        }
+        return lecture;
+      }));
+    } catch (err) {
+      console.error('Error deleting concept:', err);
+      alert(err instanceof api.APIError ? err.message : 'Failed to delete concept');
+      throw err;
+    }
   };
 
   const updateConceptStatus = (lectureId: string, conceptId: string, newStatus: ProgressStatus) => {
@@ -155,6 +192,37 @@ export default function App() {
     }));
   };
 
+  // Show loading state on initial load
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
+          <p className="text-gray-600">Loading Super Feynman...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto p-6">
+          <div className="text-red-600 text-5xl mb-4">⚠️</div>
+          <h2 className="text-xl font-bold text-gray-900 mb-2">Connection Error</h2>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <button
+            onClick={loadData}
+            className="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition-colors"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {screen.type === 'home' && (
@@ -165,7 +233,7 @@ export default function App() {
           onSelectCourse={(courseId) => setScreen({ type: 'course', courseId })}
         />
       )}
-      
+
       {screen.type === 'course' && (
         <CourseView
           course={courses.find(c => c.id === screen.courseId)!}
@@ -176,33 +244,33 @@ export default function App() {
           onSelectLecture={(lectureId) => setScreen({ type: 'lecture', lectureId, courseId: screen.courseId })}
         />
       )}
-      
+
       {screen.type === 'lecture' && (
         <LectureView
           lecture={lectures.find(l => l.id === screen.lectureId)!}
           onBack={() => setScreen({ type: 'course', courseId: screen.courseId })}
           onDeleteConcept={(conceptId) => deleteConcept(screen.lectureId, conceptId)}
-          onSelectConcept={(conceptId, audience) => 
+          onSelectConcept={(conceptId, audience) =>
             setScreen({ type: 'review', conceptId, lectureId: screen.lectureId, courseId: screen.courseId, audience })
           }
         />
       )}
-      
+
       {screen.type === 'review' && (
         <ReviewSession
           concept={lectures.find(l => l.id === screen.lectureId)?.concepts.find(c => c.id === screen.conceptId)!}
           audience={screen.audience}
-          onEndSession={(feedback) => 
+          onEndSession={(feedback) =>
             setScreen({ type: 'feedback', conceptId: screen.conceptId, lectureId: screen.lectureId, courseId: screen.courseId, feedback })
           }
         />
       )}
-      
+
       {screen.type === 'feedback' && (
         <FeedbackScreen
           concept={lectures.find(l => l.id === screen.lectureId)?.concepts.find(c => c.id === screen.conceptId)!}
           feedback={screen.feedback}
-          onRetry={(audience) => 
+          onRetry={(audience) =>
             setScreen({ type: 'review', conceptId: screen.conceptId, lectureId: screen.lectureId, courseId: screen.courseId, audience })
           }
           onBackToConcepts={() => {
@@ -214,25 +282,4 @@ export default function App() {
       )}
     </div>
   );
-}
-
-// Simulate concept extraction from text
-async function simulateConceptExtraction(text: string): Promise<Concept[]> {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 2000));
-  
-  // Generate mock concepts based on text length
-  const wordCount = text.split(/\s+/).length;
-  const conceptCount = Math.min(Math.max(Math.floor(wordCount / 50), 5), 15);
-  
-  const concepts: Concept[] = [];
-  for (let i = 0; i < conceptCount; i++) {
-    concepts.push({
-      id: `${Date.now()}-${i}`,
-      name: `Concept ${i + 1} from notes`,
-      status: 'Not Started',
-    });
-  }
-  
-  return concepts;
 }
