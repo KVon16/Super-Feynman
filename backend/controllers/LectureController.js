@@ -186,7 +186,21 @@ class LectureController extends BaseController {
       [parsedCourseId]
     );
 
-    this.sendSuccess(res, lectures);
+    // Fetch concepts for each lecture
+    const lecturesWithConcepts = await Promise.all(
+      lectures.map(async (lecture) => {
+        const concepts = await query(
+          'SELECT * FROM concepts WHERE lecture_id = ? ORDER BY id ASC',
+          [lecture.id]
+        );
+        return {
+          ...lecture,
+          concepts: concepts
+        };
+      })
+    );
+
+    this.sendSuccess(res, lecturesWithConcepts);
   });
 
   /**

@@ -12,12 +12,15 @@ interface ReviewSessionProps {
 export function ReviewSession({ concept, audience, onEndSession }: ReviewSessionProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
-  // TODO: Task 4.5 will add back: isRecording, setIsRecording, isTranscribing, setIsTranscribing
+  const [isRecording, setIsRecording] = useState(false);
+  const [isTranscribing, setIsTranscribing] = useState(false);
   const [isAIThinking, setIsAIThinking] = useState(false);
   const [turnCount, setTurnCount] = useState(0);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [isInitializing, setIsInitializing] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
 
   // Initialize session with backend API
   useEffect(() => {
@@ -49,6 +52,16 @@ export function ReviewSession({ concept, audience, onEndSession }: ReviewSession
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  // Cleanup on component unmount
+  useEffect(() => {
+    return () => {
+      // Stop recording and release microphone if component unmounts
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+        mediaRecorderRef.current.stop();
+      }
+    };
+  }, []);
 
   const handleSend = async () => {
     if (!input.trim() || isAIThinking || !sessionId) return;
@@ -88,10 +101,76 @@ export function ReviewSession({ concept, audience, onEndSession }: ReviewSession
     }
   };
 
+  const startRecording = async () => {
+    try {
+      // Request microphone permission
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+      // Create MediaRecorder instance
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
+      audioChunksRef.current = [];
+
+      // Collect audio data chunks
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
+        }
+      };
+
+      // Handle recording stop
+      mediaRecorder.onstop = async () => {
+        // Create audio blob
+        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+
+        try {
+          setIsTranscribing(true);
+
+          // Call transcription API
+          const transcribedText = await api.transcribeAudio(audioBlob);
+
+          // Set transcribed text in input field
+          setInput(transcribedText);
+        } catch (error) {
+          console.error('Error transcribing audio:', error);
+          alert('Failed to transcribe audio. Please try again or use text input.');
+        } finally {
+          setIsTranscribing(false);
+        }
+
+        // Clean up: stop all tracks to release microphone
+        stream.getTracks().forEach(track => track.stop());
+
+        // Reset audio chunks
+        audioChunksRef.current = [];
+      };
+
+      // Start recording
+      mediaRecorder.start();
+      setIsRecording(true);
+    } catch (error) {
+      console.error('Error accessing microphone:', error);
+      if (error instanceof Error && error.name === 'NotAllowedError') {
+        alert('Microphone permission denied. Please allow microphone access and try again.');
+      } else {
+        alert('Failed to access microphone. Please check your device settings.');
+      }
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+    }
+  };
+
   const handleMicClick = async () => {
-    // TODO: Task 4.5 will implement real MediaRecorder audio recording
-    // For now, show a message that this feature is coming soon
-    alert('Audio recording will be implemented in Task 4.5. Please use text input for now.');
+    if (isRecording) {
+      stopRecording();
+    } else {
+      await startRecording();
+    }
   };
 
   const handleEndSession = async () => {
@@ -191,11 +270,19 @@ export function ReviewSession({ concept, audience, onEndSession }: ReviewSession
           <div className="flex items-center gap-3">
             <button
               onClick={handleMicClick}
-              className="flex-shrink-0 p-3 rounded-full transition-all bg-secondary text-muted-foreground hover:bg-muted"
-              disabled={isAIThinking}
-              title="Audio recording coming in Task 4.5"
+              className={`flex-shrink-0 p-3 rounded-full transition-all ${
+                isRecording
+                  ? 'bg-destructive text-destructive-foreground animate-pulse'
+                  : 'bg-secondary text-muted-foreground hover:bg-muted'
+              }`}
+              disabled={isAIThinking || isTranscribing}
+              title={isRecording ? "Click to stop recording" : isTranscribing ? "Transcribing..." : "Click to start recording"}
             >
-              <Mic className="w-5 h-5" />
+              {isTranscribing ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                <Mic className="w-5 h-5" />
+              )}
             </button>
 
             <input

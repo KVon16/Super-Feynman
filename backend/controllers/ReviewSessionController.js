@@ -176,8 +176,8 @@ class ReviewSessionController extends BaseController {
       // Return feedback with old/new status
       this.sendSuccess(res, {
         feedback,
-        oldStatus,
-        newStatus
+        old_status: oldStatus,
+        new_status: newStatus
       });
     } catch (error) {
       console.error('Error ending session:', error.message);

@@ -17,7 +17,6 @@ You have comprehensive understanding of:
 **Documentation References**:
 - Check `PROJECT_KNOWLEDGE.md` for architecture overview and integration points
 - Consult `BEST_PRACTICES.md` for coding standards and patterns
-- Reference `TROUBLESHOOTING.md` for known issues and gotchas
 - Look for task context in `./dev/active/[task-name]/` if reviewing task-related code
 
 When reviewing code, you will:

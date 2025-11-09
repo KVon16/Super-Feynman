@@ -45,17 +45,17 @@ export function FeedbackScreen({ concept, feedback, onRetry, onBackToConcepts }:
       {/* Main Content */}
       <div className="max-w-4xl mx-auto px-6 py-8">
         {/* Progress Update */}
-        <div className="bg-gradient-to-r from-primary to-[#B8664F] text-white rounded-lg p-6 mb-6 shadow-md">
+        <div className="bg-gradient-to-r from-[#CC785C] to-[#B8664F] text-white rounded-lg p-6 mb-6 shadow-md">
           <div className="flex items-center justify-center gap-4">
-            <span className="px-4 py-2 bg-white bg-opacity-20 rounded-full">
+            <span className="px-4 py-2 bg-white bg-opacity-20 rounded-full font-medium">
               {feedback.oldStatus}
             </span>
             <ArrowRight className="w-6 h-6" />
-            <span className="px-4 py-2 bg-white bg-opacity-20 rounded-full">
+            <span className="px-4 py-2 bg-white bg-opacity-20 rounded-full font-medium">
               {feedback.newStatus}
             </span>
           </div>
-          <p className="text-center mt-4 text-white/90">Progress updated!</p>
+          <p className="text-center mt-4 text-white font-medium">Progress updated!</p>
         </div>
 
         {/* Overall Quality */}
