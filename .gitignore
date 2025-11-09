@@ -163,3 +163,26 @@ frontend/.env
 frontend/node_modules
 frontend/dist
 .claude/tsc-cache/
+
+# MCP Configuration with tokens
+.mcp.json
+
+# Claude Code local settings (contains personal paths)
+.claude/settings.local.json
+
+# Playwright MCP artifacts
+.playwright-mcp/
+
+# Python cache and virtual environment
+**/__pycache__/
+*.pyc
+*.pyo
+venv/
+
+# Additional SQLite files
+*.db-journal
+*.db-wal
+*.db-shm
+
+# Development documentation
+dev/

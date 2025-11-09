@@ -37,28 +37,34 @@ export function LectureView({ lecture, onBack, onDeleteConcept, onSelectConcept 
   });
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="bg-card border-b border-border px-6 py-4">
+    <div className="min-h-screen bg-background bg-textured">
+      {/* Enhanced Header */}
+      <div className="bg-gradient-cream-cararra border-b border-primary/10 px-6 py-5 shadow-soft">
         <div className="max-w-4xl mx-auto flex items-center gap-4">
-          <button onClick={onBack} className="p-2 hover:bg-secondary rounded-full transition-colors">
-            <ArrowLeft className="w-5 h-5 text-muted-foreground" />
+          <button onClick={onBack} className="p-2.5 icon-button-enhanced rounded-full">
+            <ArrowLeft className="w-5 h-5 text-primary" />
           </button>
-          <h1>{lecture.name}</h1>
+          <h1 className="text-foreground text-shadow-sm">{lecture.name}</h1>
         </div>
       </div>
 
       {/* Main Content */}
       <div className="max-w-4xl mx-auto px-6 py-8">
         {lecture.concepts.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20">
-            <p className="text-muted-foreground">No concepts found in this lecture</p>
+          <div className="flex flex-col items-center justify-center py-24">
+            <div className="bg-gradient-white-cream p-12 rounded-2xl shadow-medium border border-primary/10">
+              <p className="text-muted-foreground text-lg text-center">
+                No concepts found in this lecture
+              </p>
+            </div>
           </div>
         ) : (
           <div>
-            <h2 className="mb-6">Concepts ({lecture.concepts.length})</h2>
-            
-            <div className="space-y-3">
+            <h2 className="mb-8 text-foreground text-shadow-sm">
+              Concepts ({lecture.concepts.length})
+            </h2>
+
+            <div className="space-y-4">
               {sortedConcepts.map((concept) => (
                 <ConceptCard
                   key={concept.id}

@@ -244,89 +244,89 @@ export function ReviewSession({ concept, audience, onEndSession }: ReviewSession
   // Show loading state while initializing session
   if (isInitializing) {
     return (
-      <div className="h-screen flex items-center justify-center bg-background">
-        <div className="text-center">
+      <div className="h-screen flex items-center justify-center bg-background bg-textured">
+        <div className="text-center bg-gradient-white-cream p-12 rounded-2xl shadow-medium">
           <Loader2 className="w-12 h-12 animate-spin text-primary mx-auto mb-4" />
-          <p className="text-muted-foreground">Starting review session...</p>
+          <p className="text-muted-foreground text-lg">Starting review session...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="h-screen flex flex-col bg-background">
-      {/* Header */}
-      <div className="bg-card border-b border-border px-6 py-4 flex-shrink-0">
+    <div className="h-screen flex flex-col bg-background bg-textured">
+      {/* Enhanced Header */}
+      <div className="bg-gradient-cream-cararra border-b border-primary/10 px-6 py-5 flex-shrink-0 shadow-soft">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <button onClick={handleEndSession} className="p-2 hover:bg-secondary rounded-full transition-colors">
-              <ArrowLeft className="w-5 h-5 text-muted-foreground" />
+            <button onClick={handleEndSession} className="p-2.5 icon-button-enhanced rounded-full">
+              <ArrowLeft className="w-5 h-5 text-primary" />
             </button>
-            <h2>{concept.name}</h2>
+            <h2 className="text-foreground text-shadow-sm">{concept.name}</h2>
           </div>
           <button
             onClick={handleEndSession}
-            className="px-4 py-2 text-destructive border border-destructive rounded-lg hover:bg-destructive/10 transition-colors"
+            className="px-5 py-2.5 text-destructive border border-destructive rounded-xl hover:bg-destructive/10 transition-smooth font-medium shadow-sm"
           >
             End Session
           </button>
         </div>
       </div>
 
-      {/* Instruction */}
-      <div className="bg-secondary border-b border-border px-6 py-3 flex-shrink-0">
+      {/* Enhanced Instruction */}
+      <div className="bg-primary/5 border-b border-primary/10 px-6 py-4 flex-shrink-0">
         <div className="max-w-4xl mx-auto">
-          <p className="text-foreground">
-            Explain the concept in your own words. The AI will ask questions to check your understanding.
+          <p className="text-foreground font-medium">
+            💡 Explain the concept in your own words. The AI will ask questions to check your understanding.
           </p>
         </div>
       </div>
 
-      {/* Messages */}
+      {/* Enhanced Messages */}
       <div className="flex-1 overflow-y-auto px-6 py-6">
-        <div className="max-w-4xl mx-auto space-y-4">
+        <div className="max-w-4xl mx-auto space-y-5">
           {messages.map((message) => (
             <div
               key={message.id}
               className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
             >
               <div
-                className={`max-w-[70%] px-4 py-3 rounded-lg ${
+                className={`max-w-[75%] px-5 py-3.5 rounded-2xl transition-smooth ${
                   message.role === 'user'
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-card text-foreground border border-border'
+                    ? 'bg-gradient-brass-light text-white shadow-brass'
+                    : 'bg-gradient-white-cream text-foreground border border-border shadow-soft'
                 }`}
               >
-                <p className="whitespace-pre-wrap">{message.content}</p>
+                <p className="whitespace-pre-wrap leading-relaxed">{message.content}</p>
               </div>
             </div>
           ))}
-          
+
           {isAIThinking && (
             <div className="flex justify-start">
-              <div className="bg-card text-foreground border border-border px-4 py-3 rounded-lg">
+              <div className="bg-gradient-white-cream text-foreground border border-border px-5 py-3.5 rounded-2xl shadow-soft">
                 <div className="flex items-center gap-2">
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Thinking...</span>
+                  <Loader2 className="w-4 h-4 animate-spin text-primary" />
+                  <span className="text-muted-foreground">Thinking...</span>
                 </div>
               </div>
             </div>
           )}
-          
+
           <div ref={messagesEndRef} />
         </div>
       </div>
 
-      {/* Input Area */}
-      <div className="bg-card border-t border-border px-6 py-4 flex-shrink-0">
+      {/* Enhanced Input Area */}
+      <div className="bg-gradient-cream-cararra border-t border-primary/10 px-6 py-5 flex-shrink-0 shadow-soft">
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center gap-3">
             <button
               onClick={handleMicClick}
-              className={`flex-shrink-0 p-3 rounded-full transition-all ${
+              className={`flex-shrink-0 p-3.5 rounded-full transition-smooth shadow-soft ${
                 isRecording
-                  ? 'bg-destructive text-destructive-foreground animate-pulse'
-                  : 'bg-secondary text-muted-foreground hover:bg-muted'
+                  ? 'bg-destructive text-destructive-foreground animate-pulse-brass shadow-brass'
+                  : 'bg-white text-primary hover:bg-primary/10 hover:scale-110 active:scale-95'
               }`}
               disabled={isAIThinking || isTranscribing}
               title={isRecording ? "Click to stop recording" : isTranscribing ? "Transcribing..." : "Click to start recording"}
@@ -344,14 +344,14 @@ export function ReviewSession({ concept, audience, onEndSession }: ReviewSession
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
               placeholder="Type your explanation or use the microphone..."
-              className="flex-1 px-4 py-3 bg-input-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+              className="flex-1 px-5 py-3.5 bg-white border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-smooth shadow-soft"
               disabled={isAIThinking}
             />
-            
+
             <button
               onClick={handleSend}
               disabled={!input.trim() || isAIThinking}
-              className="flex-shrink-0 p-3 bg-primary text-primary-foreground rounded-full hover:opacity-90 transition-all disabled:opacity-30 disabled:cursor-not-allowed disabled:shadow-none shadow-sm"
+              className="flex-shrink-0 p-3.5 bg-gradient-brass-light text-white rounded-full hover-lift shadow-brass transition-smooth disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none disabled:hover:transform-none"
             >
               <Send className="w-5 h-5" />
             </button>

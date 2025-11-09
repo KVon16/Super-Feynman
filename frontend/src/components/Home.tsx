@@ -39,17 +39,19 @@ export function Home({ courses, onAddCourse, onDeleteCourse, onSelectCourse }: H
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="bg-card border-b border-border px-6 py-4">
+    <div className="min-h-screen bg-background bg-textured">
+      {/* Enhanced Header */}
+      <div className="bg-gradient-cream-cararra border-b border-primary/10 px-6 py-5 shadow-soft">
         <div className="max-w-4xl mx-auto relative flex items-center justify-center">
-          <h1 className="text-foreground">Super Feynman</h1>
-          <div className="absolute right-0 flex gap-3">
-            <button className="p-2 hover:bg-secondary rounded-full transition-colors">
-              <Settings className="w-5 h-5 text-muted-foreground" />
+          <h1 className="text-foreground text-shadow-sm font-medium tracking-tight">
+            Super Feynman
+          </h1>
+          <div className="absolute right-0 flex gap-2">
+            <button className="p-2.5 icon-button-enhanced rounded-full">
+              <Settings className="w-5 h-5 text-primary" />
             </button>
-            <button className="p-2 hover:bg-secondary rounded-full transition-colors">
-              <User className="w-5 h-5 text-muted-foreground" />
+            <button className="p-2.5 icon-button-enhanced rounded-full">
+              <User className="w-5 h-5 text-primary" />
             </button>
           </div>
         </div>
@@ -58,32 +60,36 @@ export function Home({ courses, onAddCourse, onDeleteCourse, onSelectCourse }: H
       {/* Main Content */}
       <div className="max-w-4xl mx-auto px-6 py-8">
         {courses.length === 0 ? (
-          /* Empty State */
-          <div className="flex flex-col items-center justify-center py-20">
-            <p className="text-muted-foreground mb-6">Welcome, add your first course to get started</p>
-            <button
-              onClick={() => setShowAddDialog(true)}
-              className="bg-primary text-primary-foreground px-6 py-3 rounded-lg hover:opacity-90 transition-all flex items-center gap-2 shadow-sm"
-            >
-              <Plus className="w-5 h-5" />
-              Add a Course
-            </button>
-          </div>
-        ) : (
-          /* Course List */
-          <div>
-            <div className="flex items-center justify-between mb-6">
-              <h2>My Courses</h2>
+          /* Enhanced Empty State */
+          <div className="flex flex-col items-center justify-center py-24">
+            <div className="bg-gradient-white-cream p-12 rounded-2xl shadow-medium border border-primary/10">
+              <p className="text-muted-foreground text-lg mb-8 text-center max-w-md">
+                Welcome! Add your first course to begin mastering concepts with AI
+              </p>
               <button
                 onClick={() => setShowAddDialog(true)}
-                className="bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:opacity-90 transition-all flex items-center gap-2 shadow-sm"
+                className="bg-gradient-brass-light text-white px-8 py-3.5 rounded-xl hover-lift shadow-brass transition-smooth flex items-center gap-2 mx-auto font-medium"
+              >
+                <Plus className="w-5 h-5" />
+                Add Your First Course
+              </button>
+            </div>
+          </div>
+        ) : (
+          /* Enhanced Course List */
+          <div>
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-foreground text-shadow-sm">My Courses</h2>
+              <button
+                onClick={() => setShowAddDialog(true)}
+                className="bg-primary text-primary-foreground px-5 py-2.5 rounded-xl hover-lift shadow-brass transition-smooth flex items-center gap-2 font-medium"
               >
                 <Plus className="w-4 h-4" />
                 Add Course
               </button>
             </div>
-            
-            <div className="space-y-3">
+
+            <div className="space-y-4">
               {courses.map((course) => (
                 <CourseCard
                   key={course.id}
