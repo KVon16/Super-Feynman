@@ -220,7 +220,7 @@ Build "Super Feynman" - a web application for college students to systematically
 
 ### OpenAI Whisper API:
 - Endpoint: `/v1/audio/transcriptions`
-- Model: `whisper-turbo`
+- Model: `whisper-1`
 - Input: Audio blob from frontend (format: webm or mp3)
 - Output: Transcribed text
 

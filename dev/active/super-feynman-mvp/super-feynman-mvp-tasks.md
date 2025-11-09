@@ -270,7 +270,7 @@
 - [ ] Initialize OpenAI client with API key
 - [ ] Implement `transcribeAudio(audioBuffer, filename)` function:
   - [ ] Create FormData with audio file
-  - [ ] Call Whisper API with whisper-turbo model
+  - [ ] Call Whisper API with whisper-1 model
   - [ ] Return transcribed text
 - [ ] Create `backend/routes/transcribeRoutes.js`
 - [ ] Implement `POST /api/transcribe`:

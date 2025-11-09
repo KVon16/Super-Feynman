@@ -514,11 +514,11 @@ Backend (Express.js)
   async function transcribeAudio(audioBuffer, filename) {
     const formData = new FormData();
     formData.append('file', audioBuffer, filename);
-    formData.append('model', 'whisper-turbo');
+    formData.append('model', 'whisper-1');
 
     const transcription = await openai.audio.transcriptions.create({
       file: audioBuffer,
-      model: 'whisper-turbo'
+      model: 'whisper-1'
     });
 
     return transcription.text;
