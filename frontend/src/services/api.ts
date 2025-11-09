@@ -4,41 +4,41 @@
  * Provides typed functions for all backend API endpoints with error handling
  */
 
-const API_URL = import.meta.env.VITE_API_URL || '';
+import {
+  APIError,
+  ProgressStatus,
+  AudienceLevel,
+  Concept,
+  Lecture,
+  Course,
+  FeedbackData,
+  BackendConcept,
+  BackendCourse,
+} from '../types';
 
 // ============================================================================
-// Error Handling
+// Environment Configuration
 // ============================================================================
 
-export class APIError extends Error {
-  constructor(
-    message: string,
-    public status: number,
-    public data?: any
-  ) {
-    super(message);
-    this.name = 'APIError';
+const API_URL = import.meta.env.VITE_API_URL || (() => {
+  if (import.meta.env.DEV) {
+    console.warn(
+      '⚠️  VITE_API_URL not set, using default: http://localhost:3001\n' +
+      '   Create a .env file with VITE_API_URL=http://localhost:3001 to remove this warning'
+    );
+    return 'http://localhost:3001';
   }
-}
+  throw new Error(
+    'VITE_API_URL environment variable is not set. ' +
+    'Please create a .env file with VITE_API_URL=<your-backend-url>'
+  );
+})();
 
 // ============================================================================
-// Type Definitions
+// Backend-Specific Types (Internal to API client)
 // ============================================================================
 
-export type ProgressStatus = 'Not Started' | 'Reviewing' | 'Understood' | 'Mastered';
-export type AudienceLevel = 'classmate' | 'middleschooler' | 'kid';
-
-// Backend response types (snake_case from database)
-interface BackendConcept {
-  id: number;
-  lecture_id: number;
-  concept_name: string;
-  concept_description: string;
-  progress_status: ProgressStatus;
-  last_reviewed: string | null;
-  created_at: string;
-}
-
+// Backend lecture includes file_content field not exposed to frontend
 interface BackendLecture {
   id: number;
   course_id: number;
@@ -46,48 +46,6 @@ interface BackendLecture {
   file_content: string;
   created_at: string;
   concepts?: BackendConcept[];
-}
-
-interface BackendCourse {
-  id: number;
-  name: string;
-  created_at: string;
-}
-
-// Frontend types (camelCase for UI)
-export interface Concept {
-  id: string;
-  name: string;
-  description: string;
-  status: ProgressStatus;
-  lastReviewed?: Date;
-}
-
-export interface Lecture {
-  id: string;
-  name: string;
-  courseId: string;
-  concepts: Concept[];
-}
-
-export interface Course {
-  id: string;
-  name: string;
-}
-
-export interface Message {
-  role: 'user' | 'assistant';
-  content: string;
-}
-
-export interface FeedbackData {
-  oldStatus: ProgressStatus;
-  newStatus: ProgressStatus;
-  overallQuality: string;
-  clearParts: string[];
-  unclearParts: string[];
-  jargonUsed: string[];
-  struggledWith: string[];
 }
 
 // ============================================================================
@@ -223,6 +181,28 @@ export async function createLecture(
   name: string,
   file: File
 ): Promise<Lecture> {
+  // Validate file type
+  const allowedTypes = [
+    'application/pdf',
+    'text/plain',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  ];
+  if (!allowedTypes.includes(file.type)) {
+    throw new APIError(
+      'Invalid file type. Please upload a PDF, TXT, or DOCX file.',
+      400
+    );
+  }
+
+  // Validate file size (max 10MB)
+  const maxSize = 10 * 1024 * 1024;
+  if (file.size > maxSize) {
+    throw new APIError(
+      'File too large. Maximum size is 10MB.',
+      400
+    );
+  }
+
   const formData = new FormData();
   formData.append('courseId', courseId);
   formData.append('name', name);

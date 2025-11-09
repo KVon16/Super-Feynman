@@ -573,7 +573,7 @@
 - Cleanup on component unmount to release microphone
 - Audio format: audio/webm (compatible with backend Whisper API)
 - TypeScript build succeeds with no errors
-- Servers running: Backend (3001), Frontend (5175)
+- Servers running: Backend (3001), Frontend (5173)
 
 ---
 

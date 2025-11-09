@@ -1,7 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 import { ArrowLeft, Send, Mic, Loader2 } from 'lucide-react';
-import { Concept, Message, FeedbackData } from '../App';
+import { Concept, FeedbackData, isValidAudienceLevel, UIMessage } from '../types';
 import * as api from '../services/api';
+import { useError } from '../contexts/ErrorContext';
+
+// Configuration constants
+const MAX_CONVERSATION_TURNS = 5; // Number of user messages before ending session
+const END_SESSION_DELAY_MS = 1000; // Brief delay to allow user to see the final AI response
 
 interface ReviewSessionProps {
   concept: Concept;
@@ -10,7 +15,7 @@ interface ReviewSessionProps {
 }
 
 export function ReviewSession({ concept, audience, onEndSession }: ReviewSessionProps) {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<UIMessage[]>([]);
   const [input, setInput] = useState('');
   const [isRecording, setIsRecording] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
@@ -20,33 +25,54 @@ export function ReviewSession({ concept, audience, onEndSession }: ReviewSession
   const [isInitializing, setIsInitializing] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const mediaStreamRef = useRef<MediaStream | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
+  const { showError } = useError();
 
   // Initialize session with backend API
   useEffect(() => {
+    let cancelled = false;
+
     const initializeSession = async () => {
       try {
         setIsInitializing(true);
-        const response = await api.startReviewSession(concept.id, audience as api.AudienceLevel);
-        setSessionId(response.sessionId);
 
-        const initialMessage: Message = {
-          id: '1',
-          role: 'assistant',
-          content: response.initialMessage,
-        };
-        setMessages([initialMessage]);
+        // Validate audience level
+        if (!isValidAudienceLevel(audience)) {
+          throw new Error(`Invalid audience level: ${audience}`);
+        }
+
+        const response = await api.startReviewSession(concept.id, audience);
+
+        // Only update state if still mounted
+        if (!cancelled) {
+          setSessionId(response.sessionId);
+
+          const initialMessage: UIMessage = {
+            id: '1',
+            role: 'assistant',
+            content: response.initialMessage,
+          };
+          setMessages([initialMessage]);
+        }
       } catch (error) {
-        console.error('Error starting session:', error);
-        // Fallback to allow user to try again
-        alert('Failed to start review session. Please try again.');
+        if (!cancelled) {
+          console.error('Error starting session:', error);
+          showError('Failed to start review session. Please try again.');
+        }
       } finally {
-        setIsInitializing(false);
+        if (!cancelled) {
+          setIsInitializing(false);
+        }
       }
     };
 
     initializeSession();
-  }, [concept.id, concept.name, audience]);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [concept.id, audience, showError]);
 
   // Scroll to bottom when messages change
   useEffect(() => {
@@ -56,9 +82,15 @@ export function ReviewSession({ concept, audience, onEndSession }: ReviewSession
   // Cleanup on component unmount
   useEffect(() => {
     return () => {
-      // Stop recording and release microphone if component unmounts
+      // Stop recording
       if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
         mediaRecorderRef.current.stop();
+      }
+
+      // Always stop all media stream tracks to release microphone
+      if (mediaStreamRef.current) {
+        mediaStreamRef.current.getTracks().forEach(track => track.stop());
+        mediaStreamRef.current = null;
       }
     };
   }, []);
@@ -66,22 +98,22 @@ export function ReviewSession({ concept, audience, onEndSession }: ReviewSession
   const handleSend = async () => {
     if (!input.trim() || isAIThinking || !sessionId) return;
 
-    const userMessage: Message = {
+    const userMessage: UIMessage = {
       id: Date.now().toString(),
       role: 'user',
       content: input.trim(),
     };
 
     const userInput = input.trim();
-    setMessages([...messages, userMessage]);
+    setMessages(prevMessages => [...prevMessages, userMessage]);
     setInput('');
-    setTurnCount(turnCount + 1);
+    setTurnCount(prevTurnCount => prevTurnCount + 1);
 
     try {
       setIsAIThinking(true);
       const response = await api.sendMessage(sessionId, userInput);
 
-      const aiMessage: Message = {
+      const aiMessage: UIMessage = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
         content: response.aiResponse,
@@ -89,13 +121,14 @@ export function ReviewSession({ concept, audience, onEndSession }: ReviewSession
 
       setMessages(prev => [...prev, aiMessage]);
 
-      // End session after 10 turns (5 user messages)
-      if (turnCount >= 4) {
-        setTimeout(() => handleEndSession(), 1000);
+      // End session after MAX_CONVERSATION_TURNS
+      if (turnCount >= MAX_CONVERSATION_TURNS - 1) {
+        // Use setTimeout to allow user to see the final AI response
+        setTimeout(() => handleEndSession(), END_SESSION_DELAY_MS);
       }
     } catch (error) {
       console.error('Error sending message:', error);
-      alert('Failed to send message. Please try again.');
+      showError('Failed to send message. Please try again.');
     } finally {
       setIsAIThinking(false);
     }
@@ -105,6 +138,7 @@ export function ReviewSession({ concept, audience, onEndSession }: ReviewSession
     try {
       // Request microphone permission
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaStreamRef.current = stream; // Store for cleanup
 
       // Create MediaRecorder instance
       const mediaRecorder = new MediaRecorder(stream);
@@ -133,13 +167,16 @@ export function ReviewSession({ concept, audience, onEndSession }: ReviewSession
           setInput(transcribedText);
         } catch (error) {
           console.error('Error transcribing audio:', error);
-          alert('Failed to transcribe audio. Please try again or use text input.');
+          showError('Failed to transcribe audio. Please try again or use text input.');
         } finally {
           setIsTranscribing(false);
         }
 
         // Clean up: stop all tracks to release microphone
-        stream.getTracks().forEach(track => track.stop());
+        if (mediaStreamRef.current) {
+          mediaStreamRef.current.getTracks().forEach(track => track.stop());
+          mediaStreamRef.current = null;
+        }
 
         // Reset audio chunks
         audioChunksRef.current = [];
@@ -151,9 +188,9 @@ export function ReviewSession({ concept, audience, onEndSession }: ReviewSession
     } catch (error) {
       console.error('Error accessing microphone:', error);
       if (error instanceof Error && error.name === 'NotAllowedError') {
-        alert('Microphone permission denied. Please allow microphone access and try again.');
+        showError('Microphone permission denied. Please allow microphone access and try again.');
       } else {
-        alert('Failed to access microphone. Please check your device settings.');
+        showError('Failed to access microphone. Please check your device settings.');
       }
     }
   };
@@ -182,7 +219,7 @@ export function ReviewSession({ concept, audience, onEndSession }: ReviewSession
       onEndSession(feedback);
     } catch (error) {
       console.error('Error ending session:', error);
-      alert('Failed to end session. Please try again.');
+      showError('Failed to end session. Please try again.');
       setIsAIThinking(false);
     }
     // Note: Don't set isAIThinking to false on success as we're navigating away
