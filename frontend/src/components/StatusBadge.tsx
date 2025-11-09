@@ -6,10 +6,10 @@ interface StatusBadgeProps {
 
 export function StatusBadge({ status }: StatusBadgeProps) {
   const colors = {
-    'Not Started': 'bg-muted text-muted-foreground',
-    'Reviewing': 'bg-[#FEF3C7] text-[#92400E]',
-    'Understood': 'bg-[#D1FAE5] text-[#065F46]',
-    'Mastered': 'bg-primary text-primary-foreground',
+    'Not Started': 'bg-gray-200 text-gray-700',
+    'Reviewing': 'bg-amber-200 text-amber-800',
+    'Understood': 'bg-green-200 text-green-800',
+    'Mastered': 'bg-green-600 text-white',
   };
 
   return (

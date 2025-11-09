@@ -577,61 +577,67 @@
 
 ---
 
-## Phase 5: Feature Completion & Polish ⏳ NOT STARTED
+## Phase 5: Feature Completion & Polish ✅ COMPLETED
 
-**Effort:** S | **Priority:** MEDIUM | **Estimated Time:** 1 hour
+**Effort:** S | **Priority:** MEDIUM | **Estimated Time:** 1 hour | **Completed:** 2025-11-09
 
-### Task 5.1: Progress Status Colors
-- [ ] Verify StatusBadge.tsx color mapping:
-  - [ ] Not Started → Gray (bg-gray-200 text-gray-700)
-  - [ ] Reviewing → Amber (bg-amber-200 text-amber-800)
-  - [ ] Understood → Light Green (bg-green-200 text-green-800)
-  - [ ] Mastered → Dark Green (bg-green-600 text-white)
-- [ ] Test color changes:
-  - [ ] Complete review session
-  - [ ] Verify status updates visually
-  - [ ] Colors match design system
+### Task 5.1: Progress Status Colors ✅
+- [x] Verify StatusBadge.tsx color mapping:
+  - [x] Not Started → Gray (bg-gray-200 text-gray-700)
+  - [x] Reviewing → Amber (bg-amber-200 text-amber-800)
+  - [x] Understood → Light Green (bg-green-200 text-green-800)
+  - [x] Mastered → Dark Green (bg-green-600 text-white)
+- [x] Test color changes:
+  - [x] Complete review session
+  - [x] Verify status updates visually
+  - [x] Colors match design system
 
-**Acceptance:** Status badges show correct colors for all 4 levels
+**Acceptance:** Status badges show correct colors for all 4 levels ✅
 
----
-
-### Task 5.2: Delete Cascade Verification
-- [ ] Test delete course:
-  - [ ] Create course with lectures and concepts
-  - [ ] Delete course
-  - [ ] Verify lectures removed from database
-  - [ ] Verify concepts removed from database
-  - [ ] Verify UI updates correctly
-- [ ] Test delete lecture:
-  - [ ] Create lecture with concepts
-  - [ ] Delete lecture
-  - [ ] Verify concepts removed from database
-  - [ ] Verify UI updates correctly
-- [ ] Test confirmation dialogs:
-  - [ ] Delete shows confirmation
-  - [ ] Cancel works
-  - [ ] Confirm deletes item
-
-**Acceptance:** Cascading deletes work, no orphaned records, confirmations appear
+**Implementation:** Updated StatusBadge.tsx to use standard Tailwind color classes
 
 ---
 
-### Task 5.3: Concept Sorting
-- [ ] Verify backend sorts by last_reviewed DESC
-- [ ] Test sorting:
-  - [ ] Create multiple concepts
-  - [ ] Review one concept (updates last_reviewed)
-  - [ ] Verify it moves to top of list
-  - [ ] New concepts (null last_reviewed) appear at bottom
-- [ ] Test with multiple reviews:
-  - [ ] Review concept A
-  - [ ] Review concept B
-  - [ ] Verify B is now first
-  - [ ] Review concept A again
-  - [ ] Verify A is now first
+### Task 5.2: Delete Cascade Verification ✅
+- [x] Test delete course:
+  - [x] Create course with lectures and concepts
+  - [x] Delete course
+  - [x] Verify lectures removed from database
+  - [x] Verify concepts removed from database
+  - [x] Verify UI updates correctly
+- [x] Test delete lecture:
+  - [x] Create lecture with concepts
+  - [x] Delete lecture
+  - [x] Verify concepts removed from database
+  - [x] Verify UI updates correctly
+- [x] Test confirmation dialogs:
+  - [x] Delete shows confirmation
+  - [x] Cancel works
+  - [x] Confirm deletes item
 
-**Acceptance:** Most recently reviewed concepts at top, new concepts at bottom
+**Acceptance:** Cascading deletes work, no orphaned records, confirmations appear ✅
+
+**Implementation:** Verified existing cascade delete infrastructure works correctly
+
+---
+
+### Task 5.3: Concept Sorting ✅
+- [x] Verify backend sorts by last_reviewed DESC
+- [x] Test sorting:
+  - [x] Create multiple concepts
+  - [x] Review one concept (updates last_reviewed)
+  - [x] Verify it moves to top of list
+  - [x] New concepts (null last_reviewed) appear at bottom
+- [x] Test with multiple reviews:
+  - [x] Review concept A
+  - [x] Review concept B
+  - [x] Verify B is now first
+  - [x] Review concept A again
+  - [x] Verify A is now first
+
+**Acceptance:** Most recently reviewed concepts at top, new concepts at bottom ✅
+
+**Implementation:** Fixed LectureController.js lines 132 and 193 to sort concepts by last_reviewed DESC with null values at end
 
 ---
 

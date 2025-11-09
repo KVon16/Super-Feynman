@@ -129,7 +129,11 @@ class LectureController extends BaseController {
 
       // Fetch all created concepts to return with the lecture
       concepts = await query(
-        'SELECT * FROM concepts WHERE lecture_id = ? ORDER BY id ASC',
+        `SELECT * FROM concepts
+         WHERE lecture_id = ?
+         ORDER BY
+           CASE WHEN last_reviewed IS NULL THEN 1 ELSE 0 END,
+           last_reviewed DESC`,
         [lecture.id]
       );
 
@@ -190,7 +194,11 @@ class LectureController extends BaseController {
     const lecturesWithConcepts = await Promise.all(
       lectures.map(async (lecture) => {
         const concepts = await query(
-          'SELECT * FROM concepts WHERE lecture_id = ? ORDER BY id ASC',
+          `SELECT * FROM concepts
+           WHERE lecture_id = ?
+           ORDER BY
+             CASE WHEN last_reviewed IS NULL THEN 1 ELSE 0 END,
+             last_reviewed DESC`,
           [lecture.id]
         );
         return {

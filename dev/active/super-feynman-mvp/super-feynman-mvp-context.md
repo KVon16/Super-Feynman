@@ -458,7 +458,7 @@ node server.js
 ```bash
 cd frontend
 npm run dev
-# Runs on http://localhost:5174 (or 5175 if 5174 is taken)
+# Runs on http://localhost:5173 (or 5174 if 5173 is taken)
 ```
 
 ---
