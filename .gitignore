@@ -159,3 +159,7 @@ vite.config.ts.timestamp-*
 uploads/
 temp/
 tmp/
+frontend/.env
+frontend/node_modules
+frontend/dist
+.claude/tsc-cache/
