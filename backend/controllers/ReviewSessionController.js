@@ -276,7 +276,7 @@ class ReviewSessionController extends BaseController {
 
       // Return AI response
       this.sendSuccess(res, {
-        message: aiResponse
+        ai_response: aiResponse
       });
     } catch (error) {
       console.error('Error sending message:', error.message);

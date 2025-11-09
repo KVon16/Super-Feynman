@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { ArrowLeft, Send, Mic, Loader2 } from 'lucide-react';
-import { Concept, Message, FeedbackData, ProgressStatus } from '../App';
+import { Concept, Message, FeedbackData } from '../App';
+import * as api from '../services/api';
 
 interface ReviewSessionProps {
   concept: Concept;
@@ -11,27 +12,38 @@ interface ReviewSessionProps {
 export function ReviewSession({ concept, audience, onEndSession }: ReviewSessionProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
-  const [isRecording, setIsRecording] = useState(false);
-  const [isTranscribing, setIsTranscribing] = useState(false);
+  // TODO: Task 4.5 will add back: isRecording, setIsRecording, isTranscribing, setIsTranscribing
   const [isAIThinking, setIsAIThinking] = useState(false);
   const [turnCount, setTurnCount] = useState(0);
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [isInitializing, setIsInitializing] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Initialize with first message
+  // Initialize session with backend API
   useEffect(() => {
-    const audienceText = audience === 'classmate' 
-      ? 'a college classmate' 
-      : audience === 'middleschooler' 
-      ? 'a middle schooler' 
-      : 'a young child';
-    
-    const initialMessage: Message = {
-      id: '1',
-      role: 'assistant',
-      content: `Hi! I'd like to learn about "${concept.name}". Can you explain it to me as if I'm ${audienceText}? Take your time and explain it in your own words.`,
+    const initializeSession = async () => {
+      try {
+        setIsInitializing(true);
+        const response = await api.startReviewSession(concept.id, audience as api.AudienceLevel);
+        setSessionId(response.sessionId);
+
+        const initialMessage: Message = {
+          id: '1',
+          role: 'assistant',
+          content: response.initialMessage,
+        };
+        setMessages([initialMessage]);
+      } catch (error) {
+        console.error('Error starting session:', error);
+        // Fallback to allow user to try again
+        alert('Failed to start review session. Please try again.');
+      } finally {
+        setIsInitializing(false);
+      }
     };
-    setMessages([initialMessage]);
-  }, [concept.name, audience]);
+
+    initializeSession();
+  }, [concept.id, concept.name, audience]);
 
   // Scroll to bottom when messages change
   useEffect(() => {
@@ -39,7 +51,7 @@ export function ReviewSession({ concept, audience, onEndSession }: ReviewSession
   }, [messages]);
 
   const handleSend = async () => {
-    if (!input.trim() || isAIThinking) return;
+    if (!input.trim() || isAIThinking || !sessionId) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -47,51 +59,67 @@ export function ReviewSession({ concept, audience, onEndSession }: ReviewSession
       content: input.trim(),
     };
 
+    const userInput = input.trim();
     setMessages([...messages, userMessage]);
     setInput('');
     setTurnCount(turnCount + 1);
 
-    // Simulate AI response
-    setIsAIThinking(true);
-    const aiResponse = await simulateAIResponse(input, messages.length, audience);
-    setIsAIThinking(false);
+    try {
+      setIsAIThinking(true);
+      const response = await api.sendMessage(sessionId, userInput);
 
-    const aiMessage: Message = {
-      id: (Date.now() + 1).toString(),
-      role: 'assistant',
-      content: aiResponse,
-    };
+      const aiMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: response.aiResponse,
+      };
 
-    setMessages(prev => [...prev, aiMessage]);
+      setMessages(prev => [...prev, aiMessage]);
 
-    // End session after 10 turns (5 user messages)
-    if (turnCount >= 4) {
-      setTimeout(() => handleEndSession(), 1000);
+      // End session after 10 turns (5 user messages)
+      if (turnCount >= 4) {
+        setTimeout(() => handleEndSession(), 1000);
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
+      alert('Failed to send message. Please try again.');
+    } finally {
+      setIsAIThinking(false);
     }
   };
 
   const handleMicClick = async () => {
-    if (isRecording) {
-      setIsRecording(false);
-      setIsTranscribing(true);
-      
-      // Simulate transcription
-      const transcribedText = await simulateTranscription();
-      setIsTranscribing(false);
-      setInput(transcribedText);
-    } else {
-      setIsRecording(true);
-    }
+    // TODO: Task 4.5 will implement real MediaRecorder audio recording
+    // For now, show a message that this feature is coming soon
+    alert('Audio recording will be implemented in Task 4.5. Please use text input for now.');
   };
 
   const handleEndSession = async () => {
-    setIsAIThinking(true);
-    
-    // Simulate feedback generation
-    const feedback = await simulateFeedbackGeneration(messages, concept.status);
-    
-    onEndSession(feedback);
+    if (!sessionId) return;
+
+    try {
+      setIsAIThinking(true);
+      const feedback = await api.endReviewSession(sessionId);
+      onEndSession(feedback);
+    } catch (error) {
+      console.error('Error ending session:', error);
+      alert('Failed to end session. Please try again.');
+      setIsAIThinking(false);
+    }
+    // Note: Don't set isAIThinking to false on success as we're navigating away
   };
+
+  // Show loading state while initializing session
+  if (isInitializing) {
+    return (
+      <div className="h-screen flex items-center justify-center bg-background">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 animate-spin text-primary mx-auto mb-4" />
+          <p className="text-muted-foreground">Starting review session...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-screen flex flex-col bg-background">
@@ -160,22 +188,16 @@ export function ReviewSession({ concept, audience, onEndSession }: ReviewSession
       {/* Input Area */}
       <div className="bg-card border-t border-border px-6 py-4 flex-shrink-0">
         <div className="max-w-4xl mx-auto">
-          {isTranscribing && (
-            <p className="text-muted-foreground mb-2">Transcribing...</p>
-          )}
           <div className="flex items-center gap-3">
             <button
               onClick={handleMicClick}
-              className={`flex-shrink-0 p-3 rounded-full transition-all ${
-                isRecording
-                  ? 'bg-destructive text-destructive-foreground animate-pulse'
-                  : 'bg-secondary text-muted-foreground hover:bg-muted'
-              }`}
-              disabled={isTranscribing || isAIThinking}
+              className="flex-shrink-0 p-3 rounded-full transition-all bg-secondary text-muted-foreground hover:bg-muted"
+              disabled={isAIThinking}
+              title="Audio recording coming in Task 4.5"
             >
               <Mic className="w-5 h-5" />
             </button>
-            
+
             <input
               type="text"
               value={input}
@@ -183,7 +205,7 @@ export function ReviewSession({ concept, audience, onEndSession }: ReviewSession
               onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
               placeholder="Type your explanation or use the microphone..."
               className="flex-1 px-4 py-3 bg-input-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-              disabled={isRecording || isTranscribing || isAIThinking}
+              disabled={isAIThinking}
             />
             
             <button
@@ -198,58 +220,4 @@ export function ReviewSession({ concept, audience, onEndSession }: ReviewSession
       </div>
     </div>
   );
-}
-
-// Simulate AI response
-async function simulateAIResponse(_userInput: string, messageCount: number, _audience: string): Promise<string> {
-  await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 1000));
-  
-  const responses = [
-    "That's a good start! Can you elaborate on how that works in practice?",
-    "Interesting! What would happen if we changed one of those factors?",
-    "I see. Can you give me an example to help me understand better?",
-    "Thanks for explaining! How does this relate to other concepts we've learned?",
-    "Great explanation! Can you summarize the key points for me?",
-  ];
-  
-  return responses[Math.min(Math.floor(messageCount / 2), responses.length - 1)];
-}
-
-// Simulate transcription
-async function simulateTranscription(): Promise<string> {
-  await new Promise(resolve => setTimeout(resolve, 1500));
-  return "This is a simulated transcription of your voice. In a real application, this would be the text from your speech.";
-}
-
-// Simulate feedback generation
-async function simulateFeedbackGeneration(_messages: Message[], currentStatus: ProgressStatus): Promise<FeedbackData> {
-  await new Promise(resolve => setTimeout(resolve, 2000));
-  
-  const statusProgression: ProgressStatus[] = ['Not Started', 'Reviewing', 'Understood', 'Mastered'];
-  const currentIndex = statusProgression.indexOf(currentStatus);
-  const newStatus = statusProgression[Math.min(currentIndex + 1, statusProgression.length - 1)];
-  
-  return {
-    oldStatus: currentStatus,
-    newStatus: newStatus,
-    overallQuality: "You demonstrated a solid understanding of the core concept. Your explanations were generally clear and you made good use of examples. With a bit more practice on the finer details, you'll master this concept.",
-    clearParts: [
-      "You clearly explained the main definition and purpose",
-      "Your examples were relevant and helped illustrate the concept",
-      "You showed understanding of how it connects to related topics",
-    ],
-    unclearParts: [
-      "The distinction between similar concepts could be clearer",
-      "Some technical details were glossed over too quickly",
-    ],
-    jargonUsed: [
-      "Technical term 1",
-      "Complex phrase 2",
-      "Academic vocabulary 3",
-    ],
-    struggledWith: [
-      "Explaining the underlying mechanism",
-      "Providing concrete real-world applications",
-    ],
-  };
 }
