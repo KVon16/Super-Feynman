@@ -1,6 +1,6 @@
 # Super Feynman MVP - Context
 
-**Last Updated:** 2025-11-08
+**Last Updated:** 2025-11-09
 
 ---
 
@@ -15,18 +15,97 @@
 - **Phase 1: Backend Foundation & Database (COMPLETE)**
   - Task 1.1: Backend structure, npm, dependencies, server.js
   - Task 1.2: Database schema, db.js helpers, init.js script
+- **Phase 2: Backend API - Core CRUD Operations (COMPLETE)**
+  - Task 2.1: Express server setup with BaseController, CORS, rate limiting
+  - Task 2.2: Course Management API (POST, GET, DELETE)
+  - Task 2.3: Lecture Management API with file upload (POST, GET, DELETE)
+  - Task 2.4: Concept Management API (GET, PATCH, DELETE)
+  - **Security Hardening:** All 6 critical + 6 high-priority issues resolved
+  - **Code Review:** Completed with code-architecture-reviewer agent
 
 ### 🟡 IN PROGRESS
-- Phase 2: Backend API - Core CRUD Operations (READY TO START)
+- Phase 3: AI Integrations (READY TO START)
 
 ### ⏳ NOT STARTED
-- Phase 3: AI Integrations (Anthropic & Whisper)
 - Phase 4: Frontend Integration
 - Phase 5-8: Feature completion, error handling, testing, deployment
 
 ### ⚠️ BLOCKERS
 - None currently
 - Will need API keys before testing Phase 3
+
+---
+
+## Phase 2 Implementation Summary
+
+**Completed:** 2025-11-09
+**Commit:** `9888caf` - "Implement Phase 2: Backend API with CRUD operations and security fixes"
+**Branch:** `claude/implement-phase-2-feynman-011CUwTyBJNhMAC2zvDa2Y3s`
+
+### What Was Built
+
+**1. Controllers & Routes**
+- **BaseController.js** - Utility base class with asyncHandler, sendSuccess, sendError
+- **CourseController.js** - Course CRUD operations
+- **LectureController.js** - Lecture CRUD with file upload
+- **ConceptController.js** - Concept management and progress tracking
+- **courseRoutes.js, lectureRoutes.js, conceptRoutes.js** - Express routes
+
+**2. File Upload System**
+- **upload.js** - Multer middleware with:
+  - Extension AND MIME type validation (.txt + text/plain)
+  - 5MB file size limit
+  - Automatic uploads/ directory creation
+  - Unique filename generation
+
+**3. Server Configuration (server.js)**
+- CORS configured for localhost:5173 (configurable via env)
+- Request body size limits (1MB)
+- Rate limiting (100 req/15min general, 10 uploads/15min)
+- Health check with database connectivity test
+- Production-safe error handling
+- Graceful shutdown handlers
+
+### Security Fixes Applied
+
+**Critical Issues (6/6):**
+1. ✅ Input validation for all numeric IDs (prevents invalid/malicious IDs)
+2. ✅ MIME type validation (prevents malicious file uploads)
+3. ✅ CourseId validation in lecture creation
+4. ✅ Ensured uploads directory exists (prevents runtime errors)
+5. ✅ Removed redundant try-catch blocks (cleaner error handling with asyncHandler)
+6. ✅ Request body size limits (1MB - prevents DoS attacks)
+
+**High Priority Issues (6/6):**
+7. ✅ CORS properly configured (restricted to specific origin)
+8. ✅ Rate limiting implemented (100 general + 10 uploads per 15 min)
+9. ✅ Improved file cleanup error handling (logs warnings instead of silent failures)
+10. ✅ Fixed information disclosure (hides internal errors in production)
+11. ✅ File content size & binary validation (5MB limit + binary detection)
+12. ✅ Enhanced health check (includes database connectivity test)
+
+### API Endpoints Available
+
+**Courses:**
+- `POST /api/courses` - Create course
+- `GET /api/courses` - List all courses
+- `DELETE /api/courses/:id` - Delete course (cascades)
+
+**Lectures:**
+- `POST /api/lectures` - Upload lecture with .txt file
+- `GET /api/lectures/:courseId` - List lectures for course
+- `DELETE /api/lectures/:id` - Delete lecture (cascades)
+
+**Concepts:**
+- `GET /api/concepts/:lectureId` - List concepts for lecture
+- `PATCH /api/concepts/:id/progress` - Update concept progress
+- `DELETE /api/concepts/:id` - Delete concept
+
+**System:**
+- `GET /health` - Health check with DB connectivity
+
+### Dependencies Added
+- `express-rate-limit` - API rate limiting
 
 ---
 
@@ -100,38 +179,34 @@
 - All 8 screens detailed
 - **Use as:** Reference for requirements
 
-### Files to Create (Implementation)
+### Files Created (Phase 1 & 2)
 
 **Backend Structure:**
 ```
 backend/
-├── server.js                    # Express app entry point
+├── server.js                    # ✅ Express app with security hardening
 ├── database/
-│   ├── schema.sql               # SQLite schema (4 tables)
-│   ├── db.js                    # Database connection & helpers
-│   └── superfeynman.db          # SQLite database file
+│   ├── schema.sql               # ✅ SQLite schema (4 tables)
+│   ├── db.js                    # ✅ Database connection & helpers
+│   ├── init.js                  # ✅ Initialization script
+│   └── superfeynman.db          # ✅ SQLite database file
 ├── routes/
-│   ├── courseRoutes.js          # Course CRUD endpoints
-│   ├── lectureRoutes.js         # Lecture + file upload endpoints
-│   ├── conceptRoutes.js         # Concept management endpoints
-│   ├── reviewSessionRoutes.js   # Review session endpoints
-│   └── transcribeRoutes.js      # Whisper transcription endpoint
+│   ├── courseRoutes.js          # ✅ Course CRUD endpoints
+│   ├── lectureRoutes.js         # ✅ Lecture + file upload endpoints
+│   └── conceptRoutes.js         # ✅ Concept management endpoints
 ├── controllers/
-│   ├── BaseController.js        # Error handling base class
-│   ├── CourseController.js      # Course business logic
-│   ├── LectureController.js     # Lecture + concept gen logic
-│   ├── ConceptController.js     # Concept management logic
-│   └── ReviewSessionController.js # Review session logic
-├── services/
-│   ├── anthropicService.js      # Concept gen, conversation, feedback
-│   ├── conversationService.js   # Session management
-│   └── whisperService.js        # Audio transcription
+│   ├── BaseController.js        # ✅ Error handling base class
+│   ├── CourseController.js      # ✅ Course business logic
+│   ├── LectureController.js     # ✅ Lecture + file handling
+│   └── ConceptController.js     # ✅ Concept management logic
 ├── middleware/
-│   └── upload.js                # Multer configuration
-└── uploads/                     # Temporary file storage
+│   └── upload.js                # ✅ Multer file upload configuration
+├── services/                    # ⏳ Phase 3
+├── uploads/                     # ✅ Temporary file storage (auto-created)
+└── .env                         # ✅ Environment configuration
 ```
 
-**Frontend Structure:**
+**Frontend Structure (Phase 4):**
 ```
 frontend/
 ├── src/
@@ -191,6 +266,14 @@ frontend/
 - Easier than creating conversation_messages table
 - Keeps schema simple for MVP
 
+### AsyncHandler Pattern Over Try-Catch
+**Decision:** Use asyncHandler wrapper instead of try-catch in every controller method
+**Rationale:**
+- Cleaner code (removes redundant try-catch blocks)
+- Consistent error handling
+- Errors automatically passed to Express error middleware
+- Follows Express.js best practices
+
 ---
 
 ## Technical Constraints
@@ -202,8 +285,9 @@ frontend/
 
 ### File Upload Limits
 - **Max size:** 5MB for .txt files
-- **Validation:** Frontend and backend must both check
+- **Validation:** Frontend and backend both check
 - **Formats:** Only .txt accepted (no .docx, .pdf)
+- **MIME validation:** Both extension AND MIME type checked
 
 ### Browser Compatibility
 - **MediaRecorder API:** Not supported in all browsers
@@ -224,15 +308,16 @@ Routes → Controllers → Services → Database
 ```
 - **Routes:** Define endpoints, attach middleware
 - **Controllers:** Handle HTTP requests/responses, validation
-- **Services:** Business logic, API calls
+- **Services:** Business logic, API calls (Phase 3)
 - **Database:** Data access layer
 
 ### BaseController Pattern
 - Provides `asyncHandler`, `sendSuccess`, `sendError`
 - Consistent error handling across all endpoints
 - DRY principle
+- Removes need for repetitive try-catch blocks
 
-### Service Layer for AI
+### Service Layer for AI (Phase 3)
 - Separate services for Anthropic and Whisper
 - Makes testing easier (can mock services)
 - Reusable across multiple controllers
@@ -241,7 +326,7 @@ Routes → Controllers → Services → Database
 
 ## Data Flow
 
-### Concept Generation Flow
+### Concept Generation Flow (Phase 3)
 ```
 1. User uploads .txt file via AddLectureDialog
 2. Frontend sends FormData to POST /api/lectures
@@ -254,7 +339,7 @@ Routes → Controllers → Services → Database
 9. Frontend navigates to LectureView showing concepts
 ```
 
-### Review Session Flow
+### Review Session Flow (Phase 3)
 ```
 1. User clicks concept → AudienceSelectionDialog
 2. User selects audience → POST /api/review-sessions
@@ -289,6 +374,17 @@ Routes → Controllers → Services → Database
 
 ### To Continue Implementation
 
+**Current Status: Phase 2 Complete ✅**
+- Backend API fully functional
+- All CRUD operations working
+- Security hardened
+- Ready for Phase 3: AI Integrations
+
+**Next: Phase 3, Task 3.1**
+- Create anthropicService.js
+- Implement concept generation
+- Integrate with POST /api/lectures endpoint
+
 **If backend not started:**
 - Start with Phase 1, Task 1.1 (Initialize Backend Structure)
 - Follow plan.md step by step
@@ -311,6 +407,9 @@ Routes → Controllers → Services → Database
 cd backend
 npm run dev
 
+# Test health check
+curl http://localhost:3001/health
+
 # Test course creation
 curl -X POST http://localhost:3001/api/courses \
   -H "Content-Type: application/json" \
@@ -327,7 +426,7 @@ curl -X POST http://localhost:3001/api/lectures \
 ```bash
 cd frontend
 npm run dev
-# Open http://localhost:3000
+# Open http://localhost:5173
 ```
 
 **Database:**
@@ -350,7 +449,8 @@ SELECT * FROM courses;
 PORT=3001
 ANTHROPIC_API_KEY=sk-ant-...
 OPENAI_API_KEY=sk-...
-DATABASE_PATH=./backend/database/superfeynman.db
+DATABASE_PATH=./database/superfeynman.db
+CORS_ORIGIN=http://localhost:5173
 ```
 
 **Frontend (.env):**
@@ -381,7 +481,7 @@ VITE_API_URL=http://localhost:3001
 ### Issue: CORS errors
 **Symptom:** Browser console shows "CORS policy" error
 **Solution:**
-- Ensure backend has `app.use(cors())`
+- ✅ FIXED in Phase 2: CORS configured for localhost:5173
 - Check frontend is making requests to correct URL
 - Restart backend server
 
@@ -397,15 +497,15 @@ VITE_API_URL=http://localhost:3001
 **Solution:**
 - Verify API key in .env is correct
 - Check API key has credits
-- Implement exponential backoff
+- Implement exponential backoff (Phase 3)
 - Add console.log to see exact error
 
 ### Issue: Multer not receiving file
 **Symptom:** req.file is undefined
 **Solution:**
+- ✅ FIXED in Phase 2: Upload middleware properly configured
 - Check FormData in frontend has file appended correctly
-- Verify Multer middleware is on the route
-- Check file input has `name="file"` matching Multer config
+- Verify file is .txt with text/plain MIME type
 - Use Postman to test upload independently
 
 ### Issue: MediaRecorder not supported
@@ -415,6 +515,21 @@ VITE_API_URL=http://localhost:3001
 - Add feature detection: `if (!navigator.mediaDevices) { ... }`
 - Show helpful error message to user
 - Fall back to text-only input
+
+### Issue: Invalid ID errors
+**Symptom:** "Invalid ID" errors in API calls
+**Solution:**
+- ✅ FIXED in Phase 2: All IDs validated as positive integers
+- Check ID is numeric, not string like "abc"
+- Check ID is positive, not negative
+
+### Issue: File upload rejected
+**Symptom:** "Only .txt files allowed" error
+**Solution:**
+- ✅ FIXED in Phase 2: Both extension and MIME type validated
+- Ensure file has .txt extension
+- Ensure file MIME type is text/plain
+- Check file size is under 5MB
 
 ---
 
@@ -426,12 +541,15 @@ VITE_API_URL=http://localhost:3001
 - [Express.js Guide](https://expressjs.com/en/guide/routing.html)
 - [SQLite Documentation](https://www.sqlite.org/docs.html)
 - [MediaRecorder API](https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder)
+- [Multer Documentation](https://github.com/expressjs/multer)
+- [Express Rate Limit](https://github.com/express-rate-limit/express-rate-limit)
 
 ### Code References in This Repo
 - **plan.md** - Complete requirements
 - **figma-mocks/** - All UI components
 - **super-feynman-mvp-plan.md** - Detailed implementation plan
-- **super-feynman-mvp-tasks.md** - Task checklist
+- **super-feynman-mvp-tasks.md** - Task checklist with status
+- **dev/active/phase-2-api-implementation/phase-2-api-implementation-code-review.md** - Code review findings
 
 ---
 
@@ -444,6 +562,14 @@ VITE_API_URL=http://localhost:3001
 - Created comprehensive plan
 - Ready to begin implementation
 
+**2025-11-09:**
+- ✅ Completed Phase 2: Backend API with CRUD operations
+- ✅ Fixed all 6 critical security issues
+- ✅ Fixed all 6 high-priority security issues
+- ✅ Code reviewed with code-architecture-reviewer agent
+- ✅ Committed and pushed to branch: claude/implement-phase-2-feynman-011CUwTyBJNhMAC2zvDa2Y3s
+- 🔜 Ready to start Phase 3: AI Integrations
+
 ---
 
-**Next Update:** After completing Phase 1, Task 1.1
+**Next Update:** After completing Phase 3, Task 3.1 - Concept Generation
