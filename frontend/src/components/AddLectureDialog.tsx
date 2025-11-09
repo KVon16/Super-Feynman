@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import { X, Upload, Loader2 } from 'lucide-react';
 
+// Maximum file size: 5MB (matches backend validation)
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB in bytes
+
 interface AddLectureDialogProps {
   open: boolean;
   onClose: () => void;
@@ -24,12 +27,25 @@ export function AddLectureDialog({ open, onClose, onAdd }: AddLectureDialogProps
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file && file.type === 'text/plain') {
-      setSelectedFile(file);
-    } else {
+
+    if (!file) return;
+
+    // Check file type
+    if (file.type !== 'text/plain') {
       alert('Please select a .txt file');
       e.target.value = '';
+      return;
     }
+
+    // Check file size (must be less than 5MB)
+    if (file.size > MAX_FILE_SIZE) {
+      const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
+      alert(`File size must be less than 5MB. Your file is ${fileSizeMB}MB`);
+      e.target.value = '';
+      return;
+    }
+
+    setSelectedFile(file);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

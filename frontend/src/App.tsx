@@ -51,7 +51,7 @@ export default function App() {
       setLectures(allLectures);
     } catch (err) {
       console.error('Error loading data:', err);
-      setError(err instanceof APIError ? err.message : 'Failed to load data');
+      setError(err instanceof APIError ? err.message : 'Unable to load your courses and lectures. Please check your connection and try again.');
     } finally {
       setLoading(false);
     }
@@ -64,7 +64,7 @@ export default function App() {
       setScreen({ type: 'course', courseId: newCourse.id });
     } catch (err) {
       console.error('Error creating course:', err);
-      showError(err instanceof APIError ? err.message : 'Failed to create course');
+      showError(err instanceof APIError ? err.message : 'Unable to create course. Please check your connection and try again.');
       throw err;
     }
   };
@@ -77,7 +77,7 @@ export default function App() {
       setScreen({ type: 'home' });
     } catch (err) {
       console.error('Error deleting course:', err);
-      showError(err instanceof APIError ? err.message : 'Failed to delete course');
+      showError(err instanceof APIError ? err.message : 'Unable to delete course. Please try again.');
       throw err;
     }
   };
@@ -94,7 +94,7 @@ export default function App() {
       return newLecture.id;
     } catch (err) {
       console.error('Error creating lecture:', err);
-      showError(err instanceof APIError ? err.message : 'Failed to create lecture');
+      showError(err instanceof APIError ? err.message : 'Unable to create lecture. Please check your file and try again.');
       throw err;
     }
   };
@@ -106,7 +106,7 @@ export default function App() {
       setScreen({ type: 'course', courseId });
     } catch (err) {
       console.error('Error deleting lecture:', err);
-      showError(err instanceof APIError ? err.message : 'Failed to delete lecture');
+      showError(err instanceof APIError ? err.message : 'Unable to delete lecture. Please try again.');
       throw err;
     }
   };
@@ -127,7 +127,7 @@ export default function App() {
       }));
     } catch (err) {
       console.error('Error deleting concept:', err);
-      showError(err instanceof APIError ? err.message : 'Failed to delete concept');
+      showError(err instanceof APIError ? err.message : 'Unable to delete concept. Please try again.');
       throw err;
     }
   };

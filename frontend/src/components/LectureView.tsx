@@ -16,6 +16,18 @@ export function LectureView({ lecture, onBack, onDeleteConcept, onSelectConcept 
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const [selectedConceptId, setSelectedConceptId] = useState<string | null>(null);
 
+  const handleDeleteConcept = async () => {
+    if (!deleteTarget) return;
+
+    try {
+      await onDeleteConcept(deleteTarget);
+      setDeleteTarget(null);
+    } catch (error) {
+      // Error will be shown by App.tsx's error handling
+      console.error('Failed to delete concept:', error);
+    }
+  };
+
   // Sort concepts: most recently reviewed first
   const sortedConcepts = [...lecture.concepts].sort((a, b) => {
     if (!a.lastReviewed && !b.lastReviewed) return 0;
@@ -78,12 +90,7 @@ export function LectureView({ lecture, onBack, onDeleteConcept, onSelectConcept 
         title="Delete Concept?"
         message="This action cannot be undone."
         onClose={() => setDeleteTarget(null)}
-        onConfirm={() => {
-          if (deleteTarget) {
-            onDeleteConcept(deleteTarget);
-            setDeleteTarget(null);
-          }
-        }}
+        onConfirm={handleDeleteConcept}
       />
     </div>
   );

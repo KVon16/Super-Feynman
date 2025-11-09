@@ -18,6 +18,28 @@ export function CourseView({ course, lectures, onBack, onAddLecture, onDeleteLec
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
+  const handleAddLecture = async (name: string, file: File) => {
+    try {
+      await onAddLecture(course.id, name, file);
+      setShowAddDialog(false);
+    } catch (error) {
+      // Error will be shown by App.tsx's error handling
+      console.error('Failed to add lecture:', error);
+    }
+  };
+
+  const handleDeleteLecture = async () => {
+    if (!deleteTarget) return;
+
+    try {
+      await onDeleteLecture(deleteTarget);
+      setDeleteTarget(null);
+    } catch (error) {
+      // Error will be shown by App.tsx's error handling
+      console.error('Failed to delete lecture:', error);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -76,10 +98,7 @@ export function CourseView({ course, lectures, onBack, onAddLecture, onDeleteLec
       <AddLectureDialog
         open={showAddDialog}
         onClose={() => setShowAddDialog(false)}
-        onAdd={async (name, file) => {
-          await onAddLecture(course.id, name, file);
-          setShowAddDialog(false);
-        }}
+        onAdd={handleAddLecture}
       />
 
       {/* Delete Confirmation Dialog */}
@@ -88,12 +107,7 @@ export function CourseView({ course, lectures, onBack, onAddLecture, onDeleteLec
         title="Delete Lecture/Topic?"
         message="This action cannot be undone. All concepts in this lecture will be deleted."
         onClose={() => setDeleteTarget(null)}
-        onConfirm={() => {
-          if (deleteTarget) {
-            onDeleteLecture(deleteTarget);
-            setDeleteTarget(null);
-          }
-        }}
+        onConfirm={handleDeleteLecture}
       />
     </div>
   );

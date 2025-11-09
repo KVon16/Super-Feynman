@@ -16,6 +16,28 @@ export function Home({ courses, onAddCourse, onDeleteCourse, onSelectCourse }: H
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
+  const handleAddCourse = async (name: string) => {
+    try {
+      await onAddCourse(name);
+      setShowAddDialog(false);
+    } catch (error) {
+      // Error will be shown by App.tsx's error handling
+      console.error('Failed to add course:', error);
+    }
+  };
+
+  const handleDeleteCourse = async () => {
+    if (!deleteTarget) return;
+
+    try {
+      await onDeleteCourse(deleteTarget);
+      setDeleteTarget(null);
+    } catch (error) {
+      // Error will be shown by App.tsx's error handling
+      console.error('Failed to delete course:', error);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -79,10 +101,7 @@ export function Home({ courses, onAddCourse, onDeleteCourse, onSelectCourse }: H
       <AddCourseDialog
         open={showAddDialog}
         onClose={() => setShowAddDialog(false)}
-        onAdd={(name) => {
-          onAddCourse(name);
-          setShowAddDialog(false);
-        }}
+        onAdd={handleAddCourse}
       />
 
       {/* Delete Confirmation Dialog */}
@@ -91,12 +110,7 @@ export function Home({ courses, onAddCourse, onDeleteCourse, onSelectCourse }: H
         title="Delete Course?"
         message="This action cannot be undone. All lectures and concepts in this course will be deleted."
         onClose={() => setDeleteTarget(null)}
-        onConfirm={() => {
-          if (deleteTarget) {
-            onDeleteCourse(deleteTarget);
-            setDeleteTarget(null);
-          }
-        }}
+        onConfirm={handleDeleteCourse}
       />
     </div>
   );

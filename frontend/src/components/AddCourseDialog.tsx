@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X } from 'lucide-react';
+import { X, Loader2 } from 'lucide-react';
 
 interface AddCourseDialogProps {
   open: boolean;
@@ -9,19 +9,29 @@ interface AddCourseDialogProps {
 
 export function AddCourseDialog({ open, onClose, onAdd }: AddCourseDialogProps) {
   const [courseName, setCourseName] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (open) {
       setCourseName('');
+      setIsLoading(false);
     }
   }, [open]);
 
   if (!open) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (courseName.trim()) {
-      onAdd(courseName.trim());
+      try {
+        setIsLoading(true);
+        await onAdd(courseName.trim());
+      } catch (error) {
+        // Error is handled by parent component
+        console.error('Failed to add course:', error);
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -31,7 +41,11 @@ export function AddCourseDialog({ open, onClose, onAdd }: AddCourseDialogProps) 
         <div className="p-6">
           <div className="flex items-center justify-between mb-4">
             <h2>Add a Course</h2>
-            <button onClick={onClose} className="p-1 hover:bg-secondary rounded">
+            <button
+              onClick={onClose}
+              className="p-1 hover:bg-secondary rounded"
+              disabled={isLoading}
+            >
               <X className="w-5 h-5 text-muted-foreground" />
             </button>
           </div>
@@ -52,10 +66,17 @@ export function AddCourseDialog({ open, onClose, onAdd }: AddCourseDialogProps) 
             <div className="flex justify-end">
               <button
                 type="submit"
-                disabled={!courseName.trim()}
-                className="bg-primary text-primary-foreground px-6 py-2 rounded-lg hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+                disabled={!courseName.trim() || isLoading}
+                className="bg-primary text-primary-foreground px-6 py-2 rounded-lg hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm flex items-center gap-2"
               >
-                Create New Course
+                {isLoading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Creating...
+                  </>
+                ) : (
+                  'Create New Course'
+                )}
               </button>
             </div>
           </form>
