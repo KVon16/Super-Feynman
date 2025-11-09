@@ -1,10 +1,12 @@
 {
   "version": "1.0",
+  "description": "Skill activation triggers for Claude Code. Controls when skills automatically suggest or block actions.",
   "skills": {
     "backend-dev": {
       "type": "domain",
       "enforcement": "suggest",
       "priority": "high",
+      "description": "Backend development patterns for Node.js/SQLite/Express",
       "promptTriggers": {
         "keywords": [
           "express",
@@ -41,12 +43,44 @@
           "analyze.*feedback",
           "update.*progress"
         ]
-      }
+      },
+      "fileTriggers": [
+        "backend/**/*.js",
+        "backend/**/*.ts",
+        "server/**/*.{js,ts}",
+        "api/**/*.{js,ts}",
+        "backend/routes/**/*",
+        "backend/controllers/**/*",
+        "backend/services/**/*",
+        "backend/database/**/*.{js,ts,sql}",
+        "backend/middleware/**/*",
+        "backend/models/**/*",
+        "backend/utils/**/*",
+        "backend/config/**/*",
+        "backend/server.{js,ts}",
+        "backend/app.{js,ts}",
+        "backend/index.{js,ts}",
+        "backend/.env*",
+        "backend/package.json",
+        "backend/migrations/**/*",
+        "backend/seeds/**/*",
+        "backend/tests/**/*test.{js,ts}",
+        "backend/tests/**/*spec.{js,ts}",
+        "server.{js,ts}",
+        "app.{js,ts}",
+        "**/routes/**/*Routes.{js,ts}",
+        "**/controllers/**/*Controller.{js,ts}",
+        "**/services/**/*Service.{js,ts}",
+        "knexfile.js",
+        "sequelize.config.js",
+        "prisma/schema.prisma"
+      ]
     },
     "frontend-dev": {
       "type": "domain",
       "enforcement": "suggest",
       "priority": "high",
+      "description": "Frontend development patterns for React 18+ and Tailwind CSS",
       "promptTriggers": {
         "keywords": [
           "react",
@@ -87,12 +121,53 @@
           "chat.*interface",
           "audience.*level"
         ]
-      }
+      },
+      "fileTriggers": [
+        "figma-mocks/**/*.{tsx,jsx,ts,js}",
+        "figma-mocks/**/*.css",
+        "frontend/**/*.{tsx,jsx,ts,js}",
+        "client/**/*.{tsx,jsx,ts,js}",
+        "src/**/*.{tsx,jsx,ts,js}",
+        "app/**/*.{tsx,jsx,ts,js}",
+        "pages/**/*.{tsx,jsx,ts,js}",
+        "components/**/*.{tsx,jsx,ts,js}",
+        "**/*.{css,scss,sass,less}",
+        "**/styles/**/*",
+        "**/assets/**/*",
+        "**/public/**/*",
+        "**/static/**/*",
+        "hooks/**/*.{ts,js}",
+        "contexts/**/*.{tsx,ts}",
+        "providers/**/*.{tsx,ts}",
+        "store/**/*.{ts,js}",
+        "redux/**/*.{ts,js}",
+        "state/**/*.{ts,js}",
+        "utils/**/*.{ts,js}",
+        "helpers/**/*.{ts,js}",
+        "lib/**/*.{ts,js}",
+        "types/**/*.{ts,d.ts}",
+        "interfaces/**/*.ts",
+        "layouts/**/*.{tsx,jsx}",
+        "views/**/*.{tsx,jsx}",
+        "screens/**/*.{tsx,jsx}",
+        "routes/**/*.{tsx,jsx,ts,js}",
+        "navigation/**/*.{tsx,jsx,ts,js}",
+        "**/*.module.css",
+        "**/*.module.scss",
+        "tailwind.config.{js,ts}",
+        "postcss.config.js",
+        "vite.config.{js,ts}",
+        "webpack.config.js",
+        "next.config.{js,ts}",
+        "tsconfig.json",
+        "package.json"
+      ]
     },
     "api-integration": {
       "type": "domain",
       "enforcement": "suggest",
       "priority": "high",
+      "description": "API integration guide for Anthropic Claude and OpenAI Whisper APIs",
       "promptTriggers": {
         "keywords": [
           "anthropic",
@@ -125,7 +200,42 @@
           "analyze.*conversation",
           "generate.*question"
         ]
-      }
+      },
+      "fileTriggers": [
+        "backend/services/**/*Service.{js,ts}",
+        "backend/services/**/*Api.{js,ts}",
+        "backend/services/**/*Client.{js,ts}",
+        "backend/services/anthropic*.{js,ts}",
+        "backend/services/whisper*.{js,ts}",
+        "backend/services/claude*.{js,ts}",
+        "backend/services/openai*.{js,ts}",
+        "backend/services/*Generation*.{js,ts}",
+        "backend/services/*Feedback*.{js,ts}",
+        "backend/services/*Transcription*.{js,ts}",
+        "backend/services/*AI*.{js,ts}",
+        "backend/services/*LLM*.{js,ts}",
+        "backend/services/*Chat*.{js,ts}",
+        "backend/services/*Conversation*.{js,ts}",
+        "backend/integrations/**/*",
+        "backend/api/**/*",
+        "backend/external/**/*",
+        "backend/.env*",
+        "**/services/**/anthropic*",
+        "**/services/**/whisper*",
+        "**/services/**/openai*",
+        "**/services/**/claude*",
+        "**/integrations/**/*",
+        "**/api/clients/**/*",
+        "**/api/services/**/*",
+        "**/lib/anthropic*",
+        "**/lib/openai*",
+        "**/lib/whisper*",
+        "**/utils/api*",
+        "**/config/api*",
+        "**/config/external*",
+        ".env*",
+        "*.env*"
+      ]
     }
   }
 }

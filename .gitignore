@@ -152,8 +152,8 @@ vite.config.ts.timestamp-*
 *.sqlite3
 
 # Claude Code cache and session files
-.claude/tsc-cache/
-.claude/.file-tracker.json
+# .claude/tsc-cache/
+# .claude/.file-tracker.json
 
 # Uploaded files and temporary content
 uploads/
