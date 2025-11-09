@@ -40,7 +40,7 @@ This guide is organized into specialized topics. Choose what you need:
 **File:** [anthropic-integration.md](anthropic-integration.md)
 
 Topics covered:
-- Latest model information (claude-sonnet-4-20250514)
+- Latest model information (claude-sonnet-4-5)
 - Concept generation from lecture notes
 - Review conversation sessions (Feynman Technique)
 - Feedback analysis
@@ -71,10 +71,10 @@ Topics covered:
 
 ## Quick Reference
 
-### Latest API Models (Jan 2025)
+### Latest API Models (Nov 2025)
 
 **Anthropic:**
-- Model: `claude-sonnet-4-20250514`
+- Model: `claude-sonnet-4-5`
 - Context: 200K tokens
 - Use: Concept generation, conversations, feedback
 

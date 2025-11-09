@@ -6,8 +6,8 @@ Complete guide to integrating Anthropic Claude API for concept generation, revie
 
 ## Latest Model Information
 
-As of January 2025, the latest Anthropic model is:
-- **Model ID:** `claude-sonnet-4-20250514`
+As of November 2025, the latest Anthropic model is:
+- **Model ID:** `claude-sonnet-4-5`
 - **Context Window:** 200K tokens
 - **Features:** Advanced reasoning, code generation, long context
 
@@ -26,7 +26,7 @@ const client = new Anthropic({
 });
 
 // Model configuration
-const MODEL = 'claude-sonnet-4-20250514';
+const MODEL = 'claude-sonnet-4-5';
 const MAX_TOKENS = 2000;
 
 class AnthropicService {

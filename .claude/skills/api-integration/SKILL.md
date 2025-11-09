@@ -51,7 +51,7 @@ const client = new Anthropic({
 
 async function generateConcepts(lectureText) {
     const message = await client.messages.create({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-5',
         max_tokens: 2000,
         messages: [{
             role: 'user',
@@ -76,7 +76,7 @@ async function continueReviewConversation(conversationHistory, userMessage) {
     ];
 
     const message = await client.messages.create({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-5',
         max_tokens: 300,
         messages: updatedHistory
     });
@@ -118,7 +118,7 @@ async function transcribeAudio(audioFilePath) {
 ## API Models (Latest as of Jan 2025)
 
 ### Anthropic
-- **Model**: `claude-sonnet-4-20250514`
+- **Model**: `claude-sonnet-4-5`
 - **Context**: 200K tokens
 - **Use**: Concept generation, conversations, feedback
 
