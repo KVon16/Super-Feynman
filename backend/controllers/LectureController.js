@@ -1,6 +1,7 @@
 const BaseController = require('./BaseController');
 const { query, run } = require('../database/db');
 const fs = require('fs').promises;
+const anthropicService = require('../services/anthropicService');
 
 /**
  * LectureController - Handles all lecture-related operations
@@ -109,8 +110,51 @@ class LectureController extends BaseController {
       console.error('Warning: Failed to delete uploaded file:', file.path, err.message);
     });
 
-    // Note: Concept generation will be added in Phase 3
-    this.sendSuccess(res, lecture, 201);
+    // Phase 3: Generate concepts from lecture content using Anthropic API
+    let concepts = [];
+    let conceptsGenerationError = null;
+
+    try {
+      console.log(`Generating concepts for lecture ID ${lecture.id}...`);
+      const generatedConcepts = await anthropicService.generateConcepts(fileContent);
+
+      // Insert each concept into the database
+      for (const concept of generatedConcepts) {
+        const conceptResult = await run(
+          'INSERT INTO concepts (lecture_id, concept_name, concept_description, progress_status) VALUES (?, ?, ?, ?)',
+          [lecture.id, concept.concept_name, concept.concept_description, 'Not Started']
+        );
+        console.log(`Inserted concept ID ${conceptResult.lastID}: ${concept.concept_name}`);
+      }
+
+      // Fetch all created concepts to return with the lecture
+      concepts = await query(
+        'SELECT * FROM concepts WHERE lecture_id = ? ORDER BY id ASC',
+        [lecture.id]
+      );
+
+      console.log(`Successfully generated and saved ${concepts.length} concepts for lecture ID ${lecture.id}`);
+    } catch (error) {
+      // Log error but don't fail the entire request
+      console.error('Error generating concepts:', error.message);
+      conceptsGenerationError = error.message;
+
+      // Lecture is still created successfully even if concept generation fails
+      // This provides a better user experience - they can manually add concepts or retry
+    }
+
+    // Return lecture with generated concepts (or empty array if generation failed)
+    const response = {
+      ...lecture,
+      concepts: concepts
+    };
+
+    // Include error information if concept generation failed
+    if (conceptsGenerationError) {
+      response.concepts_generation_error = conceptsGenerationError;
+    }
+
+    this.sendSuccess(res, response, 201);
   });
 
   /**
