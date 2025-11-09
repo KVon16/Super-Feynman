@@ -205,7 +205,7 @@ Build "Super Feynman" - a web application for college students to systematically
 ### Anthropic API Usage:
 1. **Concept Generation:**
    - Endpoint: `/v1/messages`
-   - Model: `claude-sonnet-4-20250514`
+   - Model: `claude-sonnet-4-5`
    - Prompt: "Break down the following lecture notes into 5-15 bite-sized, distinct concepts that a student should understand. Return as JSON array with 'concept_name' and 'concept_description' fields."
    - Input: Full text file content
 
@@ -220,7 +220,7 @@ Build "Super Feynman" - a web application for college students to systematically
 
 ### OpenAI Whisper API:
 - Endpoint: `/v1/audio/transcriptions`
-- Model: `whisper-1`
+- Model: `whisper-turbo`
 - Input: Audio blob from frontend (format: webm or mp3)
 - Output: Transcribed text
 
