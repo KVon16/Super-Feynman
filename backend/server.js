@@ -72,9 +72,9 @@ app.get('/health', async (req, res) => {
 app.use('/api/courses', require('./routes/courseRoutes'));
 app.use('/api/lectures', uploadLimiter, require('./routes/lectureRoutes')); // Stricter limit for uploads
 app.use('/api/concepts', require('./routes/conceptRoutes'));
-// Phase 3 routes (will be added later):
-// app.use('/api/review-sessions', require('./routes/reviewSessionRoutes'));
-// app.use('/api/transcribe', require('./routes/transcribeRoutes'));
+// Phase 3 routes:
+app.use('/api/review-sessions', require('./routes/reviewSessionRoutes'));
+app.use('/api/transcribe', require('./routes/transcribeRoutes'));
 
 // 404 handler - must come before error handler
 app.use((req, res) => {
