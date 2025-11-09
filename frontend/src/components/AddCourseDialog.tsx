@@ -36,14 +36,15 @@ export function AddCourseDialog({ open, onClose, onAdd }: AddCourseDialogProps) 
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-card rounded-lg shadow-xl w-full max-w-md mx-4">
-        <div className="p-6">
+    <div className="fixed inset-0 bg-black bg-opacity-85 z-50" onClick={onClose}>
+      <div className="fixed inset-0 flex items-center justify-center pointer-events-none z-50">
+        <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-4 pointer-events-auto" onClick={(e) => e.stopPropagation()}>
+          <div className="p-6">
           <div className="flex items-center justify-between mb-4">
             <h2>Add a Course</h2>
             <button
               onClick={onClose}
-              className="p-1 hover:bg-secondary rounded"
+              className="p-3 hover:bg-secondary rounded transition-colors"
               disabled={isLoading}
             >
               <X className="w-5 h-5 text-muted-foreground" />
@@ -80,6 +81,7 @@ export function AddCourseDialog({ open, onClose, onAdd }: AddCourseDialogProps) 
               </button>
             </div>
           </form>
+          </div>
         </div>
       </div>
     </div>

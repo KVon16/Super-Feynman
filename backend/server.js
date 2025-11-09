@@ -35,7 +35,7 @@ const apiLimiter = rateLimit({
 // Stricter rate limiter for file uploads
 const uploadLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 10, // Only 10 uploads per 15 minutes
+  max: 20, // Only 20 uploads per 15 minutes
   message: {
     success: false,
     error: 'Too many uploads from this IP, please try again later.'

@@ -16,12 +16,13 @@ export function AudienceSelectionDialog({ open, onClose, onSelect }: AudienceSel
   ];
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-card rounded-lg shadow-xl w-full max-w-md mx-4">
-        <div className="p-6">
+    <div className="fixed inset-0 bg-black bg-opacity-85 z-50" onClick={onClose}>
+      <div className="fixed inset-0 flex items-center justify-center pointer-events-none z-50">
+        <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-4 pointer-events-auto" onClick={(e) => e.stopPropagation()}>
+          <div className="p-6">
           <div className="flex items-center justify-between mb-6">
             <h2>Choose your audience level</h2>
-            <button onClick={onClose} className="p-1 hover:bg-secondary rounded">
+            <button onClick={onClose} className="p-3 hover:bg-secondary rounded transition-colors">
               <X className="w-5 h-5 text-muted-foreground" />
             </button>
           </div>
@@ -51,6 +52,7 @@ export function AudienceSelectionDialog({ open, onClose, onSelect }: AudienceSel
           >
             Cancel
           </button>
+          </div>
         </div>
       </div>
     </div>

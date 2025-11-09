@@ -156,10 +156,10 @@ export default function App() {
   // Show loading state on initial load
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
-          <p className="text-gray-600">Loading Super Feynman...</p>
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4"></div>
+          <p className="text-muted-foreground">Loading Super Feynman...</p>
         </div>
       </div>
     );
@@ -168,14 +168,14 @@ export default function App() {
   // Show error state
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center max-w-md mx-auto p-6">
-          <div className="text-red-600 text-5xl mb-4">⚠️</div>
-          <h2 className="text-xl font-bold text-gray-900 mb-2">Connection Error</h2>
-          <p className="text-gray-600 mb-4">{error}</p>
+          <div className="text-destructive text-5xl mb-4">⚠️</div>
+          <h2 className="text-xl font-bold text-foreground mb-2">Connection Error</h2>
+          <p className="text-muted-foreground mb-4">{error}</p>
           <button
             onClick={loadData}
-            className="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition-colors"
+            className="bg-primary text-primary-foreground px-6 py-2 rounded-lg hover:opacity-90 transition-all shadow-sm"
           >
             Retry
           </button>

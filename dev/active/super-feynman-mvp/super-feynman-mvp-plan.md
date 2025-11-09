@@ -73,7 +73,7 @@ Backend (Express.js)
 - **File Upload:** Multer middleware for .txt files
 - **APIs:**
   - Anthropic Claude Sonnet 4.5 (concept generation, conversation, feedback)
-  - OpenAI Whisper Turbo (speech-to-text)
+  - OpenAI Whisper-1 (speech-to-text)
 
 ---
 

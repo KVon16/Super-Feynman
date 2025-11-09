@@ -351,7 +351,7 @@ export function ReviewSession({ concept, audience, onEndSession }: ReviewSession
             <button
               onClick={handleSend}
               disabled={!input.trim() || isAIThinking}
-              className="flex-shrink-0 p-3 bg-primary text-primary-foreground rounded-full hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+              className="flex-shrink-0 p-3 bg-primary text-primary-foreground rounded-full hover:opacity-90 transition-all disabled:opacity-30 disabled:cursor-not-allowed disabled:shadow-none shadow-sm"
             >
               <Send className="w-5 h-5" />
             </button>

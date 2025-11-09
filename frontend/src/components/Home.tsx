@@ -42,9 +42,9 @@ export function Home({ courses, onAddCourse, onDeleteCourse, onSelectCourse }: H
     <div className="min-h-screen bg-background">
       {/* Header */}
       <div className="bg-card border-b border-border px-6 py-4">
-        <div className="max-w-4xl mx-auto flex items-center justify-between">
-          <h1 className="text-center flex-1 text-foreground">Super Feynman</h1>
-          <div className="flex gap-3">
+        <div className="max-w-4xl mx-auto relative flex items-center justify-center">
+          <h1 className="text-foreground">Super Feynman</h1>
+          <div className="absolute right-0 flex gap-3">
             <button className="p-2 hover:bg-secondary rounded-full transition-colors">
               <Settings className="w-5 h-5 text-muted-foreground" />
             </button>
