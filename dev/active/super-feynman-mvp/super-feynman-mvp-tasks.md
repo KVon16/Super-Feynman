@@ -411,34 +411,44 @@
 
 ---
 
-### Task 4.2: Create API Client Service
-- [ ] Create `frontend/src/services/api.ts`
-- [ ] Define API_URL from environment variable
-- [ ] Implement course functions:
-  - [ ] createCourse(name)
-  - [ ] getCourses()
-  - [ ] deleteCourse(id)
-- [ ] Implement lecture functions:
-  - [ ] createLecture(courseId, name, file)
-  - [ ] getLectures(courseId)
-  - [ ] deleteLecture(id)
-- [ ] Implement concept functions:
-  - [ ] getConcepts(lectureId)
-  - [ ] updateConceptProgress(id, status)
-  - [ ] deleteConcept(id)
-- [ ] Implement review session functions:
-  - [ ] startReviewSession(conceptId, audienceLevel)
-  - [ ] sendMessage(sessionId, message)
-  - [ ] endReviewSession(sessionId)
-- [ ] Implement transcription function:
-  - [ ] transcribeAudio(audioBlob)
-- [ ] Add error handling:
-  - [ ] Create APIError class
-  - [ ] Wrap fetch calls in try-catch
-  - [ ] Parse error responses
-- [ ] Add TypeScript types for all requests/responses
+### Task 4.2: Create API Client Service ✅ COMPLETED
+- [x] Create `frontend/src/services/api.ts`
+- [x] Define API_URL from environment variable
+- [x] Implement course functions:
+  - [x] createCourse(name)
+  - [x] getCourses()
+  - [x] deleteCourse(id)
+- [x] Implement lecture functions:
+  - [x] createLecture(courseId, name, file)
+  - [x] getLectures(courseId)
+  - [x] deleteLecture(id)
+- [x] Implement concept functions:
+  - [x] getConcepts(lectureId)
+  - [x] updateConceptProgress(id, status)
+  - [x] deleteConcept(id)
+- [x] Implement review session functions:
+  - [x] startReviewSession(conceptId, audienceLevel)
+  - [x] sendMessage(sessionId, message)
+  - [x] endReviewSession(sessionId)
+- [x] Implement transcription function:
+  - [x] transcribeAudio(audioBlob)
+- [x] Add error handling:
+  - [x] Create APIError class
+  - [x] Wrap fetch calls in try-catch
+  - [x] Parse error responses
+- [x] Add TypeScript types for all requests/responses
 
-**Acceptance:** API client provides all backend endpoints with proper types and error handling
+**Acceptance:** API client provides all backend endpoints with proper types and error handling ✅
+
+**Implementation Notes:**
+- Created comprehensive API client with TypeScript types
+- Implemented snake_case to camelCase transformation for frontend compatibility
+- Added custom APIError class with status and data properties
+- All backend endpoints covered: courses, lectures, concepts, review sessions, transcription
+- Created `.env` file with VITE_API_URL
+- Created `vite-env.d.ts` for proper TypeScript environment variable typing
+- Installed missing `@types/react` and `@types/react-dom` packages
+- Build succeeds without errors
 
 ---
 
