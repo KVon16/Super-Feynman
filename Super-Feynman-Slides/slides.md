@@ -26,11 +26,11 @@ fonts:
 AI-Powered Learning Through the Feynman Technique
 
 <div class="mt-8 px-8 py-3 bg-orange-600 text-white rounded-lg inline-block font-bold">
-  🏆 Best Use of Claude Track
+  Best Use of Claude Track
 </div>
 
 <div class="mt-8 text-gray-600 text-sm">
-  CBC Hackathon 2024 | Solo Project
+  CBC Hackathon 2025 | Solo Project
 </div>
 
 <div class="abs-br m-6 flex gap-2">
@@ -291,6 +291,7 @@ layout: default
 <div class="space-y-2 text-sm">
 
 - ❌ Constant context switching
+- ❌ Context lost between sessions
 - ❌ Searching for patterns
 - ❌ Inconsistent code reviews
 - ❌ Tech debt accumulation
@@ -569,7 +570,7 @@ layout: default
 
 ### Product:
 - 👥 User auth & profiles
-- 📅 Spaced repetition
+- 📅 History & Weekly Recap
 - 📤 Export/import
 - 🤝 Collaborative sessions
 - 📱 Mobile app
