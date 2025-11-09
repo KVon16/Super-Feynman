@@ -27,6 +27,12 @@
       "env": {
         "FIGMA_PERSONAL_ACCESS_TOKEN": "figd_5D8rlPuVhT8OMymVhx7YDotB4oc6yKmMDR5eqoRb"
       }
+    }, 
+    "playwright": {
+      "command": "npx",
+      "args": [
+        "@playwright/mcp@latest"
+      ]
     }
   }
 }

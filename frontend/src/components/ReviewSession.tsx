@@ -136,12 +136,28 @@ export function ReviewSession({ concept, audience, onEndSession }: ReviewSession
 
   const startRecording = async () => {
     try {
+      // Check MediaRecorder support
+      if (!navigator.mediaDevices || !window.MediaRecorder) {
+        showError('Audio recording is not supported in this browser. Please use a modern browser or try text input.');
+        return;
+      }
+
       // Request microphone permission
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       mediaStreamRef.current = stream; // Store for cleanup
 
-      // Create MediaRecorder instance
-      const mediaRecorder = new MediaRecorder(stream);
+      // Detect supported audio format (Safari uses audio/mp4, others use audio/webm)
+      let mimeType = 'audio/webm';
+      if (MediaRecorder.isTypeSupported('audio/webm')) {
+        mimeType = 'audio/webm';
+      } else if (MediaRecorder.isTypeSupported('audio/mp4')) {
+        mimeType = 'audio/mp4';
+      } else if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
+        mimeType = 'audio/webm;codecs=opus';
+      }
+
+      // Create MediaRecorder instance with appropriate MIME type
+      const mediaRecorder = new MediaRecorder(stream, { mimeType });
       mediaRecorderRef.current = mediaRecorder;
       audioChunksRef.current = [];
 
@@ -154,8 +170,8 @@ export function ReviewSession({ concept, audience, onEndSession }: ReviewSession
 
       // Handle recording stop
       mediaRecorder.onstop = async () => {
-        // Create audio blob
-        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+        // Create audio blob with the same MIME type used for recording
+        const audioBlob = new Blob(audioChunksRef.current, { type: mimeType });
 
         try {
           setIsTranscribing(true);
