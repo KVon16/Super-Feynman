@@ -141,50 +141,52 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
-# macOS
+# ============================================
+# PROJECT-SPECIFIC IGNORES (Super Feynman)
+# ============================================
+
+# macOS System Files
 .DS_Store
 .AppleDouble
 .LSOverride
 
-# SQLite databases
+# SQLite Databases (User Data)
 *.db
 *.sqlite
 *.sqlite3
 
-# Claude Code cache and session files
-# .claude/tsc-cache/
-# .claude/.file-tracker.json
+# Claude Code Cache and Session Files
+.claude/tsc-cache/
 
-# Uploaded files and temporary content
+# User Uploads and Temporary Content
 uploads/
 temp/
 tmp/
+
+# Frontend-Specific Files
 frontend/.env
 frontend/node_modules
 frontend/dist
-.claude/tsc-cache/
 
-# MCP Configuration with tokens
+# MCP Configuration (Contains API Tokens)
 .mcp.json
 
-# Claude Code local settings (contains personal paths)
+# Claude Code Local Settings (Personal Paths)
 .claude/settings.local.json
 
-# Playwright MCP artifacts
+# Playwright MCP Artifacts (Browser Testing)
 .playwright-mcp/
 
-# Python cache and virtual environment
+# Python Virtual Environment and Cache
 **/__pycache__/
 *.pyc
 *.pyo
 venv/
 
-# Additional SQLite files
+# SQLite Additional Files (WAL, Journal, Shared Memory)
 *.db-journal
 *.db-wal
 *.db-shm
 
-# Development documentation
+# Development Documentation (Internal Planning)
 dev/
-
-.mcp.json
